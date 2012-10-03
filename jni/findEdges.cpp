@@ -8,8 +8,16 @@
 #include "voxel.h"
 #include "RansacHeader.h"
 #include "filters.h"
+#include <android/log.h>
 using namespace std;
-
+#define ANDROID_LOG_VERBOSE ANDROID_LOG_DEBUG
+#define LOG_TAG "CVJNI"
+#define LOGV(...) __android_log_print(ANDROID_LOG_SILENT, LOG_TAG, __VA_ARGS__)
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#ifdef __cplusplus
+extern "C" {
+#endif
 vector<CvPoint*> verticalLineholder;
 vector<CvPoint*> otherLines;
 Voxel *voxelGrid;
@@ -109,7 +117,8 @@ int* imageMap;
 	morphological morph;
 	//cvNamedWindow("cornerPoints");
 	bool set = false;
-    IplImage* img = cvLoadImage(FILEPATH); 
+    IplImage* img =  pImage; //cvLoadImage(FILEPATH);
+    LOGI("Start edgecorner  feature detection");
 	IplImage* imgOnwork = NULL;
     IplImage* out = NULL;
     IplImage* finalOut = NULL;
@@ -130,6 +139,7 @@ int* imageMap;
 	}
 
     //cvReleaseImage(&img);
+	  LOGI("Before getReallocation");
 	out = getReallocation(imgOnwork, imgOnwork->depth,imgOnwork->nChannels);
 	finalOut = cvCreateImage(cvGetSize(imgOnwork),imgOnwork->depth, 1);
 	IplImage* finalOutSecond = cvCreateImage(cvGetSize(imgOnwork),IPL_DEPTH_8U,1);
@@ -139,7 +149,8 @@ int* imageMap;
 	//cornerOut = getReallocation(imgOnwork,img->depth,1);
     if(imgOnwork == NULL || out == NULL || finalOut == NULL){
     	if(!finalOut)
-    	printf("We are exiting\n");
+    	//printf("We are exiting\n");
+    	LOGI("We are exiting\n");
     	exit(0);
     }
 	//cvSmooth(imgOnwork,out, CV_GAUSSIAN,3,3);// gaussian smoothing may not be the good one to introduce
@@ -167,14 +178,20 @@ int* imageMap;
 	cvSmooth(finalOut,finalOut,CV_GAUSSIAN,3,3);
 	Mat gray1,gray2,gray3;
 	Mat LfinalOut = (Mat)finalOut;
+	LOGI("Before getEdges");
 	getEdges(LfinalOut,gray1,gray2);
+	LOGI("After getEdges");
 	cv::add(gray1,gray2,gray3);
+	LOGI("After add");
 	//cv::Canny(gray3,gray3,30,100,3);
 	gray3.convertTo(gray1,CV_8U,255);
+	LOGI("After gray3.convertTo");
 	//cv::Canny(gray1,gray1,30,100);
 	IplImage TempGray = (IplImage)gray1;
 	finalOut = &TempGray;
+	LOGI("before  morph.closing");
 	finalOut = morph.closing(finalOut,3,3,0,1);
+	LOGI("After  morph.closing");
 	//..cvShowImage("edgeImages",finalOut);
 	//waitKey(0);
 	//cvCanny(finalOut,finalOut,30,100,3);//10,10
@@ -200,13 +217,16 @@ int* imageMap;
 		circles = cvHoughCircles(finalOut,store,CV_HOUGH_GRADIENT,1.3,finalOut->height/10,100,40,0,0);
 	}
 	if(linez == NULL || linez->total < 0){
-	 printf("Programe is exiting\n");
-	 printf("Evacuate now\n");
+	// printf("Programe is exiting\n");
+	 LOGI("Programe is exiting\n");
+	 //printf("Evacuate now\n");
+	 LOGI("Evacuate now\n");
      exit(0);
 	}
 	
     int size =  linez == NULL ? circles->total : linez->total;
-	printf("linez size %d\n",linez->total);
+	//printf("linez size %d\n",linez->total);
+    LOGI("linez size");
 	//cvReleaseImage(&finalOut);
 	
 	imageMap = new int[linez->total];
@@ -279,10 +299,13 @@ int* imageMap;
 	 // cvReleaseImage(&imgOnwork);
     
 	//showImage("cornerPoints",finalOut);
-    
+	cvCopyImage(imgOnwork,img);
 	cvReleaseMemStorage(&store); 
 	cvReleaseImage(&out);
 
  return;
 
 }
+#ifdef __cplusplus
+}
+#endif

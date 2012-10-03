@@ -37,6 +37,7 @@ public class IndoorNavigationActivity extends Activity {
 	private static final int GALLERY_ID = Menu.FIRST + 1;
 	private String mCurrentImagePath = null;
 	private OpenCV opencv = new OpenCV();
+	private TestCV testCV = new TestCV();
 	private ImageView mImageView;
 
 	@Override
@@ -109,11 +110,13 @@ public class IndoorNavigationActivity extends Activity {
 		
 		int[] pixels = new int[width * height];
 		bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+		//testCV.setSourceImage(pixels, width, height);
 		opencv.setSourceImage(pixels, width, height);
 		long start = System.currentTimeMillis();
 		//opencv.extractSURFFeature();
-		//opencv.findEdgesandCorners();
+		opencv.findEdgesandCorners();
 		long end = System.currentTimeMillis();
+		//byte[] imageData = testCV.getSourceImage();
 		byte[] imageData = opencv.getSourceImage();
 		long elapse = end - start;
 		Toast.makeText(this, "" + elapse + " ms is used to extract features.",

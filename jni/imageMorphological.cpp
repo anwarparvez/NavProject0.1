@@ -11,8 +11,8 @@ IplImage* morphological::closing(IplImage *image,int rows,int cols,int shape,int
 		structure = CV_SHAPE_ELLIPSE;
 	IplConvKernel *kernel = cvCreateStructuringElementEx(rows,cols,rows/2,cols/2,CV_SHAPE_RECT,NULL); 
 	cvDilate(image,dest,kernel,iter);
-	cvShowImage("tempOpeningShow",dest);
-	cvWaitKey(0);
+	//cvShowImage("tempOpeningShow",dest);
+	//cvWaitKey(0);
 	cvErode(dest,image,kernel,iter);
 	return image; 
 }
@@ -32,8 +32,8 @@ IplImage* morphological::opening(IplImage *image,int rows,int cols,int shape,int
 	IplConvKernel *kernel = cvCreateStructuringElementEx(rows,cols,rows/2,cols/2,CV_SHAPE_RECT,NULL); 
 	
 	cvErode(image,dest,kernel,iter);
-	cvShowImage("tempOpeningShow",dest);
-	cvWaitKey(0);
+	//cvShowImage("tempOpeningShow",dest);
+	//cvWaitKey(0);
 	cvDilate(dest,image,kernel,iter);
 	return image;
 	

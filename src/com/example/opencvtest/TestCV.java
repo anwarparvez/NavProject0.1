@@ -1,6 +1,6 @@
 package com.example.opencvtest;
 
-public class OpenCV {
+public class TestCV {
 	static{
 		System.loadLibrary("main_object");
 	}
@@ -8,6 +8,4 @@ public class OpenCV {
 	public native byte[] getSourceImage();
 	public native void extractSURFFeature();
 	public native void findEdgesandCorners();
-	
-	
 }
