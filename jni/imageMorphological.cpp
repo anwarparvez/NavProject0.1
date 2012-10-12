@@ -19,9 +19,7 @@ IplImage* morphological::closing(IplImage *image,int rows,int cols,int shape,int
 IplImage* morphological::opening(IplImage *image,int rows,int cols,int shape,int iter){
 
 	int structure = 0;
-	cvNamedWindow("tempOpeningShow");
-	cvShowImage("tempOpeningShow",image);
-	cvWaitKey(0);
+	//cvWaitKey(0);
 	IplImage* dest = cvCreateImage(cvGetSize(image),image->depth,image->nChannels);
 	if(shape == 0)
 		structure = CV_SHAPE_RECT;

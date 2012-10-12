@@ -1,6 +1,5 @@
 #include <cv.h>
 #include<iostream>
-#include<highgui.h>
 using namespace cv;
 
 class morphological{

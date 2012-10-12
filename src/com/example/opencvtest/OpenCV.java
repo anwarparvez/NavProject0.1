@@ -8,6 +8,7 @@ public class OpenCV {
 	public native byte[] getSourceImage();
 	public native void extractSURFFeature();
 	public native void findEdgesandCorners();
+	public native int getCornerpoints();
 	
 	
 }

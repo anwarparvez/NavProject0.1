@@ -8,6 +8,7 @@ import java.io.OutputStream;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -17,6 +18,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
@@ -37,14 +39,22 @@ public class IndoorNavigationActivity extends Activity {
 	private static final int GALLERY_ID = Menu.FIRST + 1;
 	private String mCurrentImagePath = null;
 	private OpenCV opencv = new OpenCV();
-	private TestCV testCV = new TestCV();
+	//private TestCV testCV= new TestCV();
 	private ImageView mImageView;
+	private ProgressDialog progressDialog;
+	MyAsyncTask aTask = new MyAsyncTask();
+	Bitmap mBitmap;
+	private Uri fileUri;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		mImageView = new ImageView(this);
+		// setContentView(R.layout.activity_camera);
+		
 		setContentView(mImageView);
+	
 	}
 
 	@Override
@@ -64,8 +74,8 @@ public class IndoorNavigationActivity extends Activity {
 			mCurrentImagePath = IMAGE_DIRECTORY + "/"
 					+ Utility.createName(timeTaken) + ".jpg";
 			Log.i(TAG, mCurrentImagePath);
-			cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-					Uri.fromFile(new File(mCurrentImagePath)));
+			//fileUri=Uri.fromFile(new File(mCurrentImagePath));
+			cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(new File(mCurrentImagePath)));
 			startActivityForResult(cameraIntent, ACTIVITY_SELECT_CAMERA);
 			
 			//Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); 
@@ -75,6 +85,7 @@ public class IndoorNavigationActivity extends Activity {
 			Intent galleryIntent = new Intent(Intent.ACTION_PICK,
 					Images.Media.INTERNAL_CONTENT_URI);
 			startActivityForResult(galleryIntent, ACTIVITY_SELECT_IMAGE);
+			//runDialog(100);
 			return true;
 		}
 
@@ -97,75 +108,142 @@ public class IndoorNavigationActivity extends Activity {
         return resizedBitmap;
     }
 	
-	public void extractFeature(Bitmap bitmap)
+	public void extractFeature(Bitmap mBitmap)
 	{
 		
-		bitmap= getResizedBitmap(bitmap, 480, 640);
+		mBitmap= getResizedBitmap(mBitmap, 480, 640);
 		
 		
-		Log.i("BitmapSize", "Size"+bitmap.getRowBytes());
+		Log.i("BitmapSize", "Size"+mBitmap.getRowBytes());
 		
-		int width = bitmap.getWidth();
-		int height = bitmap.getHeight();
+		int width = mBitmap.getWidth();
+		int height = mBitmap.getHeight();
 		
 		int[] pixels = new int[width * height];
-		bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+		mBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
 		//testCV.setSourceImage(pixels, width, height);
 		opencv.setSourceImage(pixels, width, height);
 		long start = System.currentTimeMillis();
 		//opencv.extractSURFFeature();
 		opencv.findEdgesandCorners();
+		opencv.getCornerpoints();
 		long end = System.currentTimeMillis();
 		//byte[] imageData = testCV.getSourceImage();
 		byte[] imageData = opencv.getSourceImage();
 		long elapse = end - start;
 		Toast.makeText(this, "" + elapse + " ms is used to extract features.",
 				Toast.LENGTH_LONG).show();
-		bitmap = BitmapFactory.decodeByteArray(imageData, 0,
+		mBitmap = BitmapFactory.decodeByteArray(imageData, 0,
 				imageData.length);
-		mImageView.setImageBitmap(bitmap);
-	
-	
+		mImageView.setImageBitmap(mBitmap);
+
 	}
 
 	
+	void showDialog()
+	{
+		
+		//progressDialog = ProgressDialog.show(this, "Please wait....", "Image Processing");
+		progressDialog = new ProgressDialog(this);
+		progressDialog.setTitle("Please wait....");
+		progressDialog.setMessage( "Image Processing");       
+		progressDialog.setIndeterminate(false);
+		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		progressDialog.show();
+	}
 	
+	void dismissDialog()
+	{
+		progressDialog.dismiss();
+	}
+	
+	
+	class MyAsyncTask extends AsyncTask<Integer, Integer, Long> {
+        
+        @Override
+        protected Long doInBackground(Integer... params) {
+        	progressDialog.setProgress(0);  
+            long start = System.currentTimeMillis();
+			mBitmap = BitmapFactory.decodeFile(mCurrentImagePath);
+			
+			mBitmap= getResizedBitmap(mBitmap, 480, 640);
+
+			Log.i("BitmapSize", "Size"+mBitmap.getRowBytes());
+			
+			int width = mBitmap.getWidth();
+			int height = mBitmap.getHeight();
+			
+			int[] pixels = new int[width * height];
+			mBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+			publishProgress(10);
+			//testCV.setSourceImage(pixels, width, height);
+			opencv.setSourceImage(pixels, width, height);
+			publishProgress(10);
+			//opencv.extractSURFFeature();
+			opencv.findEdgesandCorners();
+			publishProgress(25);
+			opencv.getCornerpoints();
+			
+			publishProgress(35);
+			long end = System.currentTimeMillis();
+			//byte[] imageData = testCV.getSourceImage();
+			
+			byte[] imageData = opencv.getSourceImage();
+			publishProgress(10);
+			long elapse = end - start;
+/*			Toast.makeText(this, "" + elapse + " ms is used to extract features.",
+					Toast.LENGTH_LONG).show();*/
+			mBitmap = BitmapFactory.decodeByteArray(imageData, 0,
+					imageData.length);
+			publishProgress(10);
+			
+            return start - System.currentTimeMillis();
+        }
+ 
+         
+         
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+        	progressDialog.incrementProgressBy((int)(values[0]));
+        }
+         
+        @Override
+        protected void onPostExecute(Long time) {
+            //updateUI("Done with all the operations, it took:" +
+                                  //   time + " millisecondes");
+        	mImageView.setImageBitmap(mBitmap);
+        	dismissDialog();
+        	aTask = new MyAsyncTask();
+        }
+ 
+        @Override
+        protected void onPreExecute() {
+        	showDialog();
+        	//progressDialog = ProgressDialog.show(getApplicationContext(), "Please wait....", "Here your message");
+            //updateUI("Starting process");
+        }
+         
+         
+        public void doLongOperation() {
+             
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+             
+        }
+         
+    }
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) 
 	{
-		/*if (requestCode == 1888) 
-		{  
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-            byte[] Data = new byte[photo.getByteCount() + 1];
-            ByteArrayOutputStream outstream = new ByteArrayOutputStream();
-             
-            if(photo.compress(CompressFormat.JPEG, 50, outstream)){
-            	
-            	Log.i("Compression success", "Data compression\n");
-            }
-            int nRead;
-            //while ((nRead = i.read(Data, 0, Data.length)) != -1) {
-          	  //  outstream.write(data, 0, nRead);
-          	//}
-             try {
-				outstream.write(Data);
-				Log.i("output Stream", "streamer error\n");
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-             Bitmap photo1 = BitmapFactory.decodeByteArray(Data, 0, Data.length);
-          			
-            //mImageView.setImageBitmap(photo);
-            
-            extractFeature(photo1);
-            
-       
-        } */ 
+
 		if (requestCode == ACTIVITY_SELECT_CAMERA
 				&& resultCode == Activity.RESULT_OK) {
-			ContentValues values = new ContentValues();
+			aTask.execute(1);
+			/*ContentValues values = new ContentValues();
 			int degrees = Utility.getRotationFromImage(mCurrentImagePath);
 			try {
 				ExifInterface exif = new ExifInterface(mCurrentImagePath);
@@ -198,27 +276,23 @@ public class IndoorNavigationActivity extends Activity {
 			values.put(Images.Media.MIME_TYPE, "image/jpeg");
 			values.put(Images.Media.DATA, mCurrentImagePath);
 			values.put(Images.Media.ORIENTATION, degrees);
-			getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
+			getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);*/
 			
 			
 		}
 		if (requestCode == ACTIVITY_SELECT_IMAGE && resultCode == RESULT_OK) 
 		{
-			try {
-				Uri currImageURI = data.getData();
+			//progressDialog = ProgressDialog.show(getApplicationContext(), "Please wait....", "Here your message");
+			 Uri currImageURI = data.getData();
 				String[] proj = { Images.Media.DATA, Images.Media.ORIENTATION };
 				Cursor cursor = managedQuery(currImageURI, proj, null, null,
 						null);
 				int columnIndex = cursor.getColumnIndex(proj[0]);
 				cursor.moveToFirst();
 				mCurrentImagePath = cursor.getString(columnIndex);
-				Bitmap bitmap = BitmapFactory.decodeFile(mCurrentImagePath);
-				
-				extractFeature(bitmap);
-				
-			} catch (Exception e) {
-				Toast.makeText(this, e.getMessage()+ "doosh", Toast.LENGTH_LONG).show();
-			}
+			aTask.execute(1);
+			//progressDialog.dismiss();
+			
 		}
 	}
 }

@@ -156,8 +156,8 @@ void imageRotationMat(Mat &image,double angle){
 
 		}
 	//cv::filter2D(resultantMat,resultantMat, -1, kernel,cv::Point(-1,-1));
-		imshow("showImage",resultantMat);
-		waitKey(0);
+		//imshow("showImage",resultantMat);
+		//waitKey(0);
 	return;
 }
 vector<CvPoint> getFilteredpoints(CvMat* mat, vector<CvPoint*> verticalLineholder){
@@ -234,11 +234,11 @@ int histogramAnalysis( void)
                          CV_FILLED );
         }
 
-    namedWindow( "Source", 1 );
-    imshow( "Source", src );
+    //namedWindow( "Source", 1 );
+    //imshow( "Source", src );
 
-    namedWindow( "H-S Histogram", 1 );
-    imshow( "H-S Histogram", histImg );
+    //namedWindow( "H-S Histogram", 1 );
+    //imshow( "H-S Histogram", histImg );
 
     waitKey(0);
 	return 1;

@@ -80,7 +80,7 @@ JNIEXPORT jboolean JNICALL Java_com_example_opencvtest_OpenCV_setSourceImage(
 	if (pImage == NULL) {
 		return 0;
 	}
-	cvRectangle(pImage, cvPoint(20, 15), cvPoint(100, 70), cvScalar(255, 0, 0, 0),1, 8, 0);
+	//cvRectangle(pImage, cvPoint(20, 15), cvPoint(100, 70), cvScalar(255, 0, 0, 0),1, 8, 0);
 	LOGI("Load Image Done.");
 	return 1;
 }

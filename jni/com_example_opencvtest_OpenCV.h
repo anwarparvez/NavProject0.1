@@ -39,6 +39,13 @@ JNIEXPORT void JNICALL Java_com_example_opencvtest_OpenCV_extractSURFFeature
 JNIEXPORT void JNICALL Java_com_example_opencvtest_OpenCV_findEdgesandCorners
   (JNIEnv *, jobject);
 
+/*
+ * Class:     com_example_opencvtest_OpenCV
+ * Method:    getCornerpoints
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_example_opencvtest_OpenCV_getCornerpoints
+  (JNIEnv *, jobject);
 #ifdef __cplusplus
 }
 #endif
