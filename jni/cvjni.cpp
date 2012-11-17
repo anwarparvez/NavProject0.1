@@ -22,6 +22,19 @@
 #include "cxcore.h"
 #include "bmpfmt.h"
 #include "com_example_opencvtest_OpenCV.h"
+#include <opencv2/highgui/highgui.hpp>
+#include "Log.hpp"
+#include<stdio.h>
+#include<iostream>
+#include<cmath>
+#include<vector>
+#include<stdlib.h>
+#include<time.h>
+#include<string.h>
+using namespace std;
+#define MAX 1000000
+#define FOR(x,a,b) for(int x = a; x<=b; x++)
+
 using namespace std;
 #define ANDROID_LOG_VERBOSE ANDROID_LOG_DEBUG
 #define LOG_TAG "CVJNI"
@@ -31,10 +44,48 @@ using namespace std;
 #ifdef __cplusplus
 extern "C" {
 #endif
-IplImage* pImage = NULL;
+IplImage* pImage=NULL;;
 IplImage* loadPixels(int* pixels, int width, int height);
 IplImage* getIplImageFromIntArray(JNIEnv* env, jintArray array_data,
 		jint width, jint height);
+/*void randomGenerator(void){
+
+  srand(time(NULL));
+  int val;
+  int coutner = 0;
+  while((val = rand())){
+  
+   sbrc::Log::info("%lf\n",(double)val*0.02);
+	if(coutner++ == 2000)
+		break;
+  }
+  return;
+}*/
+int comp(const void *a ,const void *b){
+	if(*((double*)a)>*((double *)b))
+		return 1;
+	else
+		return -1;
+
+}
+void randomGenerator(void){
+
+  srand(time(NULL));
+  int val;
+  double memo[2002];
+  memset(memo,-1,sizeof(memo));
+  int counter = 0;
+  while((val = rand())){
+	  memo[counter++] = (double)val*0.0000002;
+      if(counter == 2000)
+		break;
+  }
+  qsort(memo,counter,sizeof(memo[0]),comp);
+  int i = 0;
+  FOR(i,0,counter-1)
+  sbrc::Log::info("%lf\n",memo[i]);
+  return;
+}
 
 JNIEXPORT void JNICALL Java_com_example_opencvtest_OpenCV_extractSURFFeature(
 		JNIEnv* env, jobject thiz) {
@@ -70,18 +121,36 @@ JNIEXPORT void JNICALL Java_com_example_opencvtest_OpenCV_extractSURFFeature(
 }
 
 JNIEXPORT jboolean JNICALL Java_com_example_opencvtest_OpenCV_setSourceImage(
-		JNIEnv* env, jobject thiz, jintArray photo_data, jint width,
-		jint height) {
+		JNIEnv * env, jobject thiz, jintArray photo_data, jint width,
+		jint height, jstring javaString) {
+
+    //Get the native string from javaString
+    const char *nativeString = env->GetStringUTFChars(javaString, 0);
+
+    //Do something with the nativeString
+
+
+    sbrc::Log::info("set Image Start");
+	//randomGenerator();
+	   // use your string
+    sbrc::Log::info("Image path %s",nativeString);
+
 	if (pImage != NULL) {
 		cvReleaseImage(&pImage);
+		   sbrc::Log::info("ReleaseImage ");
 		pImage = NULL;
 	}
-	pImage = getIplImageFromIntArray(env, photo_data, width, height);
+	//pImage = getIplImageFromIntArray(env, photo_data, width, height);
+	 pImage = cvLoadImage(nativeString);
 	if (pImage == NULL) {
+		   sbrc::Log::info("Image load Failed");
 		return 0;
 	}
 	//cvRectangle(pImage, cvPoint(20, 15), cvPoint(100, 70), cvScalar(255, 0, 0, 0),1, 8, 0);
-	LOGI("Load Image Done.");
+
+	 sbrc::Log::info("Load Image Done.");
+    //DON'T FORGET THIS LINE!!!
+    env->ReleaseStringUTFChars(javaString, nativeString);
 	return 1;
 }
 JNIEXPORT jbyteArray JNICALL Java_com_example_opencvtest_OpenCV_getSourceImage(

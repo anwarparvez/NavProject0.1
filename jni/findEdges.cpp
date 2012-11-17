@@ -11,6 +11,7 @@
 //#include "goodFeatureTotrack.cpp"
 #include <android/log.h>
 #include "imageROIextractor.h"
+#include "Log.hpp"
 using namespace std;
 #define ANDROID_LOG_VERBOSE ANDROID_LOG_DEBUG
 #define LOG_TAG "CVJNI"
@@ -115,21 +116,23 @@ inline int fRound(float flt){
 	return sum < indexHolder->size()*10;
 }
 
- JNIEXPORT void JNICALL Java_com_example_opencvtest_OpenCV_findEdgesandCorners(JNIEnv *env, jobject jmb)
+ JNIEXPORT void JNICALL Java_com_example_opencvtest_OpenCV_findEdgesandCorners(JNIEnv *env, jobject jmb,jlong addrRgba)
  {
 
-
-	//	cvNamedWindow("edgeImages");
-		//cvNamedWindow("Normalized");
+	    IplImage* img = pImage;
+	    char logMsg[50];
+	    sprintf(logMsg,"width=%d height=%d ",img->width,img->height);
+	    sbrc::Log::info(logMsg);
 		morphological morph;
 		//cvNamedWindow("cornerPoints");
 		bool set = false;
-	    IplImage* img = pImage;
 		IplImage* imgOnwork = NULL;
 	    IplImage* out = NULL;
 	    IplImage* finalOut = NULL;
 		vector<int> *indexHolder;
 
+		  sprintf(logMsg,"resize ");
+		   sbrc::Log::info(logMsg);
 		// assert(img->width % 2 == 0 && img->height % 2 == 0);
 		if(img->height >500 || img->width > 650){
 
@@ -144,7 +147,8 @@ inline int fRound(float flt){
 			cvCopyImage(img,imgOnwork);
 		}
 
-	    //cvReleaseImage(&img);
+		 sprintf(logMsg," getReallocation ");
+		   sbrc::Log::info(logMsg);
 		out = getReallocation(imgOnwork, imgOnwork->depth,imgOnwork->nChannels);
 		finalOut = cvCreateImage(cvGetSize(imgOnwork),imgOnwork->depth, 1);
 		IplImage* finalOutSecond = cvCreateImage(cvGetSize(imgOnwork),IPL_DEPTH_8U,1);
@@ -298,9 +302,20 @@ inline int fRound(float flt){
 	    cout<< "size of other lines " <<otherLines.size()<<"\n";
 		cout<< "size of vertical lines "<<verticalLineholder.size()<<"\n";
 
+		/*cv::Mat m= (cv::Mat) imgOnwork;
+		cv::Mat m2= (cv::Mat) img;
+		m.copyTo(m2);
+
+	    Mat* pMatRgb=(Mat*)addrRgba;
+	    m.copyTo(*pMatRgb);
+	    circle(*pMatRgb, Point(100, 100), 10, Scalar(255,0,0,255));
+		 sprintf(logMsg,"finish %d %d %d %d",imgOnwork->width,imgOnwork->height, m.cols,m.rows);
+				   sbrc::Log::info(logMsg);*/
 		//cvCopyImage(imgOnwork,img);
 		cvReleaseMemStorage(&store);
 		cvReleaseImage(&out);
+
+		 sbrc::Log::info("line draw");
 
 	 return;
 

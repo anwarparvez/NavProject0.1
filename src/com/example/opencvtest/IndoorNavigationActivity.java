@@ -6,10 +6,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -46,14 +55,41 @@ public class IndoorNavigationActivity extends Activity {
 	Bitmap mBitmap;
 	private Uri fileUri;
 
+	
+
+    private BaseLoaderCallback  mOpenCVCallBack = new BaseLoaderCallback(this) {
+    	@Override
+    	public void onManagerConnected(int status) {
+    		switch (status) {
+				case LoaderCallbackInterface.SUCCESS:
+				{
+					Log.i(TAG, "OpenCV loaded successfully");
+
+				} break;
+				default:
+				{
+					super.onManagerConnected(status);
+				} break;
+			}
+    	}
+	};
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+        Log.i(TAG, "Trying to load OpenCV library");
+        if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, this, mOpenCVCallBack))
+        {
+        	Log.e(TAG, "Cannot connect to OpenCV Manager");
+
+        }
 		mImageView = new ImageView(this);
 		// setContentView(R.layout.activity_camera);
 		
 		setContentView(mImageView);
+		
+
 	
 	}
 
@@ -122,10 +158,10 @@ public class IndoorNavigationActivity extends Activity {
 		int[] pixels = new int[width * height];
 		mBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
 		//testCV.setSourceImage(pixels, width, height);
-		opencv.setSourceImage(pixels, width, height);
+		opencv.setSourceImage(pixels, width, height,null);
 		long start = System.currentTimeMillis();
 		//opencv.extractSURFFeature();
-		opencv.findEdgesandCorners();
+		//opencv.findEdgesandCorners();
 		opencv.getCornerpoints();
 		long end = System.currentTimeMillis();
 		//byte[] imageData = testCV.getSourceImage();
@@ -167,6 +203,18 @@ public class IndoorNavigationActivity extends Activity {
 			mBitmap = BitmapFactory.decodeFile(mCurrentImagePath);
 			
 			mBitmap= getResizedBitmap(mBitmap, 480, 640);
+			
+		/*	Mat mat=new Mat();
+		
+			Utils.bitmapToMat(mBitmap, mat);
+			publishProgress(10);
+			opencv.FindFeatures(mat.getNativeObjAddr(), mat.getNativeObjAddr());
+			publishProgress(10);
+			opencv.findEdgesandCorners(mat.getNativeObjAddr());
+			publishProgress(10);
+			Utils.matToBitmap(mat, mBitmap);
+			
+			mat.release();*/
 
 			Log.i("BitmapSize", "Size"+mBitmap.getRowBytes());
 			
@@ -177,10 +225,10 @@ public class IndoorNavigationActivity extends Activity {
 			mBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
 			publishProgress(10);
 			//testCV.setSourceImage(pixels, width, height);
-			opencv.setSourceImage(pixels, width, height);
+			opencv.setSourceImage(pixels, width, height,mCurrentImagePath);
 			publishProgress(10);
 			//opencv.extractSURFFeature();
-			opencv.findEdgesandCorners();
+			opencv.findEdgesandCorners(0);
 			publishProgress(25);
 			opencv.getCornerpoints();
 			
@@ -190,9 +238,7 @@ public class IndoorNavigationActivity extends Activity {
 			
 			byte[] imageData = opencv.getSourceImage();
 			publishProgress(10);
-			long elapse = end - start;
-/*			Toast.makeText(this, "" + elapse + " ms is used to extract features.",
-					Toast.LENGTH_LONG).show();*/
+
 			mBitmap = BitmapFactory.decodeByteArray(imageData, 0,
 					imageData.length);
 			publishProgress(10);
@@ -290,9 +336,15 @@ public class IndoorNavigationActivity extends Activity {
 				int columnIndex = cursor.getColumnIndex(proj[0]);
 				cursor.moveToFirst();
 				mCurrentImagePath = cursor.getString(columnIndex);
+				Log.i("TagMe",mCurrentImagePath.toString()+"\n");
 			aTask.execute(1);
 			//progressDialog.dismiss();
 			
 		}
+	}
+
+	private void LOGI(String string, String string2) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     com_example_opencvtest_OpenCV
  * Method:    setSourceImage
- * Signature: ([III)Z
+ * Signature: ([IIILjava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_example_opencvtest_OpenCV_setSourceImage
-  (JNIEnv *, jobject, jintArray, jint, jint);
+  (JNIEnv *, jobject, jintArray, jint, jint, jstring);
 
 /*
  * Class:     com_example_opencvtest_OpenCV
@@ -34,10 +34,10 @@ JNIEXPORT void JNICALL Java_com_example_opencvtest_OpenCV_extractSURFFeature
 /*
  * Class:     com_example_opencvtest_OpenCV
  * Method:    findEdgesandCorners
- * Signature: ()V
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_example_opencvtest_OpenCV_findEdgesandCorners
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_example_opencvtest_OpenCV
@@ -46,6 +46,15 @@ JNIEXPORT void JNICALL Java_com_example_opencvtest_OpenCV_findEdgesandCorners
  */
 JNIEXPORT jint JNICALL Java_com_example_opencvtest_OpenCV_getCornerpoints
   (JNIEnv *, jobject);
+
+/*
+ * Class:     com_example_opencvtest_OpenCV
+ * Method:    FindFeatures
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_example_opencvtest_OpenCV_FindFeatures
+  (JNIEnv *, jobject, jlong, jlong);
+
 #ifdef __cplusplus
 }
 #endif

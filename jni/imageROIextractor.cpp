@@ -3,7 +3,7 @@
 #include "constants.h"
 #include<math.h>
 #include "ConvexHull.h"
-#define BLOCKSIZE 50
+#define BLOCKSIZE 30
 #define BLOCKMAX 150
 #define DFSWHITE -1
 #define DFSBLACK 1
@@ -11,7 +11,7 @@ int dfs_low[BLOCKMAX];
 int dfs_number[BLOCKMAX];
 int dfs_parent[BLOCKMAX];
 int dfs_index;
-int visited[200][200];
+int visited[200][100];
 typedef vector<int> indexing;
 vector<indexing> indexHoldering;
 vector<nodes> graph;
@@ -199,6 +199,9 @@ vector< vector< pair<CvPoint,int> > > imageROIExtractor(IplImage* pImage, vector
 	vector<vector<pair<CvPoint,int> > > superContainer;
 	vector<pair<int,pair<int,setStruct > > > containers;
 	IplImage *img = pImage;
+	//visited = new int*[cornerContainer.size()];
+	//for(int i = 0; i < cornerContainer.size(); i++)
+		//visited[i] = new int[cornerContainer.size()];
 	initGraph();
 	//containers.resize(cornerContainer.size());
 	for( i = 0; i < cornerContainer.size(); i++){
