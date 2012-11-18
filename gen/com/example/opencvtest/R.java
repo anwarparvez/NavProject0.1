@@ -44,24 +44,26 @@ public final class R {
         public static final int ic_launcher=0x7f02001b;
     }
     public static final class id {
-        public static final int fragment1=0x7f080006;
+        public static final int btnGetText=0x7f080002;
         public static final int imageView1=0x7f080001;
-        public static final int list=0x7f080005;
-        public static final int list_image=0x7f080003;
-        public static final int menu_camera=0x7f080009;
-        public static final int menu_image=0x7f08000a;
-        public static final int menu_settings=0x7f080007;
-        public static final int menu_video=0x7f080008;
+        public static final int list=0x7f080006;
+        public static final int list_image=0x7f080004;
+        public static final int mdetails=0x7f080007;
+        public static final int menu_camera=0x7f08000a;
+        public static final int menu_image=0x7f08000b;
+        public static final int menu_settings=0x7f080008;
+        public static final int menu_video=0x7f080009;
         public static final int surface_camera=0x7f080000;
-        public static final int thumbnail=0x7f080002;
-        public static final int title_song=0x7f080004;
+        public static final int thumbnail=0x7f080003;
+        public static final int title_song=0x7f080005;
     }
     public static final class layout {
         public static final int activity_camera=0x7f030000;
         public static final int activity_test_open_cv=0x7f030001;
         public static final int fragment1=0x7f030002;
-        public static final int list_row=0x7f030003;
-        public static final int main_layout=0x7f030004;
+        public static final int fragment2=0x7f030003;
+        public static final int list_row=0x7f030004;
+        public static final int main_layout=0x7f030005;
     }
     public static final class menu {
         public static final int activity_test_open_cv=0x7f070000;
