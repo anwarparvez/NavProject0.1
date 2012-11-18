@@ -16,6 +16,7 @@ import org.opencv.core.Mat;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -34,8 +35,14 @@ import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Images.Media;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 @SuppressLint("NewApi")
@@ -44,8 +51,6 @@ public class IndoorNavigationActivity extends Activity {
 	private static final int ACTIVITY_SELECT_CAMERA = 0;
 	private static final int ACTIVITY_SELECT_IMAGE = 1;
 	private static final String TAG = "MAIN_ACTIVITY";
-	private static final int CAMERA_ID = Menu.FIRST;
-	private static final int GALLERY_ID = Menu.FIRST + 1;
 	private String mCurrentImagePath = null;
 	private OpenCV opencv = new OpenCV();
 	//private TestCV testCV= new TestCV();
@@ -53,9 +58,10 @@ public class IndoorNavigationActivity extends Activity {
 	private ProgressDialog progressDialog;
 	MyAsyncTask aTask = new MyAsyncTask();
 	Bitmap mBitmap;
+	 MyListAdapter adapter;
 	private Uri fileUri;
 
-	
+	String[] presidents;
 
     private BaseLoaderCallback  mOpenCVCallBack = new BaseLoaderCallback(this) {
     	@Override
@@ -77,34 +83,56 @@ public class IndoorNavigationActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		setContentView(R.layout.main_layout);
         Log.i(TAG, "Trying to load OpenCV library");
         if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, this, mOpenCVCallBack))
         {
         	Log.e(TAG, "Cannot connect to OpenCV Manager");
 
         }
-		mImageView = new ImageView(this);
-		// setContentView(R.layout.activity_camera);
-		
-		setContentView(mImageView);
-		
+      
+        ListView list = (ListView)findViewById(R.id.list);
+        adapter=new MyListAdapter(this);
+        list.setAdapter(adapter);
+        
+        // Click event for single list row
+        list.setOnItemClickListener(new OnItemClickListener() {
 
-	
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+				Toast.makeText(getApplicationContext(), " "+arg3, Toast.LENGTH_LONG).show();
+				
+			}
+ 
+    
+        });
+
+	    mImageView=(ImageView) findViewById(R.id.imageView1);
+	  //  presidents = getResources().getStringArray(R.array.presidents_array);
+       // setListAdapter(new ArrayAdapter<String>(this,R.layout.list_row, presidents));
+
 	}
-
+/*	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		// TODO Auto-generated method stub
+		Toast.makeText(this,"You have selected " + presidents[position],Toast.LENGTH_SHORT).show();
+	}
+*/
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.activity_test_open_cv, menu);
 		super.onCreateOptionsMenu(menu);
-		menu.add(0, CAMERA_ID, 0, "Camera");
-		menu.add(0, GALLERY_ID, 0, "Gallery");
+/*		menu.add(0, CAMERA_ID, 0, "Camera");
+		menu.add(0, GALLERY_ID, 0, "Gallery");*/
 		return true;
 	}
 
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
-		case CAMERA_ID:
+		case R.id.menu_camera:
 			Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 			long timeTaken = System.currentTimeMillis();
 			mCurrentImagePath = IMAGE_DIRECTORY + "/"
@@ -117,7 +145,7 @@ public class IndoorNavigationActivity extends Activity {
 			//Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); 
             //startActivityForResult(cameraIntent, 1888); 
           return true;
-		case GALLERY_ID:
+		case R.id.menu_image:
 			Intent galleryIntent = new Intent(Intent.ACTION_PICK,
 					Images.Media.INTERNAL_CONTENT_URI);
 			startActivityForResult(galleryIntent, ACTIVITY_SELECT_IMAGE);
