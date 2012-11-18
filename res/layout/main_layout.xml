@@ -3,17 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal" >
-
-    <ListView 
+    
+        <ListView
         android:id="@+id/list"
         android:layout_width="300dp"
-        android:layout_height="match_parent" 
-        android:background="@android:color/darker_gray"/>
-
-    <ImageView android:background="@android:color/background_light"
-        android:id="@+id/imageView1"
-        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/blind_image" />
+        android:background="@android:color/darker_gray" />
+    <fragment 
+        android:name="net.learn2develop.Fragments.Fragment1"
+        android:id="@+id/fragment1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+
+
+<!--     <fragment
+        android:id="@+id/fragment1"
+        android:name="com.example.opencvtest.MyFragment1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" /> -->
 
 </LinearLayout>
