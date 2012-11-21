@@ -11,9 +11,12 @@ import org.opencv.android.OpenCVLoader;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -24,6 +27,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +35,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -46,6 +51,9 @@ public class IndoorNavigationActivity extends Activity {
 	MyAsyncTask aTask = new MyAsyncTask();
 	Bitmap mBitmap;
 	MyListAdapter adapter;
+	private int indicator = 0;
+
+	private static int doContine;
 
 	Fragment1 fragment1;
 
@@ -215,7 +223,7 @@ public class IndoorNavigationActivity extends Activity {
 		progressDialog.setTitle("Please wait....");
 		progressDialog.setMessage("Image Processing");
 		progressDialog.setIndeterminate(false);
-		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		progressDialog.show();
 	}
 
@@ -223,55 +231,229 @@ public class IndoorNavigationActivity extends Activity {
 		progressDialog.dismiss();
 	}
 
+	@SuppressLint("ValidFragment")
+	class dialogFragment extends DialogFragment {
+
+		public Dialog onCreateDialog(Bundle saveInstances) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setMessage("Fire in the Hole")
+					.setNegativeButton("Cancel",
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// TODO Auto-generated method stub
+
+								}
+							})
+					.setPositiveButton("Ok",
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// TODO Auto-generated method stub
+									doContine = 1;
+								}
+							});
+			return builder.create();
+		}
+
+		public void show(FragmentManager fragmentManager, String string) {
+			// TODO Auto-generated method stub
+			// super.show(fragmentManager, string);
+		}
+
+	}
+
+	class ThreadPooling extends Thread {
+
+		private volatile int lockers;
+		private volatile int lines;
+		private volatile int corners;
+
+		public ThreadPooling() {
+			lockers = 1;
+			lines = 1;
+			corners = 0;
+		}
+
+		public void setLines(int val) {
+			lines = val;
+		}
+
+		public int getLines() {
+			return lines;
+		}
+
+		public void setCorners(int val) {
+			corners = val;
+		}
+
+		public int getCorners() {
+			return corners;
+		}
+
+		public int getLocker() {
+			return lockers;
+		}
+
+		public void setLocker(int val) {
+			lockers = val;
+		}
+
+		public synchronized void run() {
+			Log.i("thread start again", "again");
+			try {
+				if (lines == 1) {
+					Log.i("Lockers value", "get Lines");
+					try {
+						opencv.findEdgesandCorners();
+						setLocker(0);
+					} catch (RuntimeException ex) {
+						setLocker(0);
+						Toast.makeText(getApplicationContext(),
+								ex.getMessage(), Toast.LENGTH_LONG).show();
+					}
+				}
+				if (corners == 1) {
+					try {
+						Log.i("Lockers value", "get Corners");
+						opencv.getCornerpoints();
+						setLocker(0);
+					} catch (RuntimeException ex) {
+						setLocker(0);
+						Toast.makeText(getApplicationContext(),
+								ex.getMessage(), Toast.LENGTH_LONG).show();
+					}
+				}
+			} catch (RuntimeException ex) {
+				Log.i("Runtime Error", ex.getMessage());
+			}
+		}
+	}
+
 	class MyAsyncTask extends AsyncTask<Integer, Integer, Long> {
+
+		@SuppressLint("UseValueOf")
+		@SuppressWarnings("deprecation")
+		private Activity ctx;
+
+		public MyAsyncTask(Activity context) {
+			// TODO Auto-generated constructor stub
+			ctx = context;
+		}
+
+		public MyAsyncTask() {
+			// TODO Auto-generated constructor stub
+		}
 
 		@Override
 		protected Long doInBackground(Integer... params) {
 			progressDialog.setProgress(0);
+			doContine = 0;
 			long start = System.currentTimeMillis();
-			mBitmap = BitmapFactory.decodeFile(mCurrentImagePath);
+			// mBitmap = BitmapFactory.decodeFile(mCurrentImagePath);
+			// mBitmap= getResizedBitmap(mBitmap, 480, 640);
 
-			mBitmap = getResizedBitmap(mBitmap, 480, 640);
-
-			/*
-			 * Mat mat=new Mat();
-			 * 
-			 * Utils.bitmapToMat(mBitmap, mat); publishProgress(10);
-			 * opencv.FindFeatures(mat.getNativeObjAddr(),
-			 * mat.getNativeObjAddr()); publishProgress(10);
-			 * opencv.findEdgesandCorners(mat.getNativeObjAddr());
-			 * publishProgress(10); Utils.matToBitmap(mat, mBitmap);
-			 * 
-			 * mat.release();
-			 */
-
-			Log.i("BitmapSize", "Size" + mBitmap.getRowBytes());
-
+			// Log.("BitmapSize", "Size"+mBitmap.getRowBytes());
 			int width = mBitmap.getWidth();
 			int height = mBitmap.getHeight();
-
 			int[] pixels = new int[width * height];
 			mBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
 			publishProgress(10);
 			// testCV.setSourceImage(pixels, width, height);
-			opencv.setSourceImage(pixels, width, height, mCurrentImagePath);
+
+			try {
+				if (opencv.setSourceImage(pixels, width, height,
+						mCurrentImagePath)) {
+					try {
+
+					} catch (Exception ex) {
+
+					}
+					if (doContine == 1)
+						return (long) 1;
+				}
+			} catch (RuntimeException ex) {
+				return (long) 1;
+			}
 			publishProgress(10);
 			// opencv.extractSURFFeature();
-			opencv.findEdgesandCorners(0);
-			publishProgress(25);
-			opencv.getCornerpoints();
+			ThreadPooling th = new ThreadPooling();
+			try {
 
+				th.setLines(1);
+				th.setCorners(0);
+				th.setLocker(1);
+				th.start();
+				long starts = System.currentTimeMillis();
+				while (th.getLocker() == 1) {
+					if (System.currentTimeMillis() - starts > 3000) {
+						try {
+							Long it = new Long(
+									(System.currentTimeMillis() - starts));
+							Log.i(it.toString(), "Tag");
+							mBitmap = BitmapFactory
+									.decodeFile("/storage/sdcard0/DCIM/blank.jpeg");
+							indicator = 1;
+							Toast.makeText(
+									getApplicationContext(),
+									"Operation is taking too long select another image",
+									Toast.LENGTH_LONG).show();
+						} catch (RuntimeException ex) {
+							Toast.makeText(getApplicationContext(),
+									ex.getMessage(), Toast.LENGTH_LONG).show();
+						}
+						return System.currentTimeMillis() - starts;
+					}
+				}
+				Log.i("After line detection", "after Lines");
+				th = new ThreadPooling();
+				th.setLocker(1);
+				th.setCorners(1);
+				th.setLines(0);
+				th.start();
+				starts = System.currentTimeMillis();
+				while (th.getLocker() == 1) {
+					if (System.currentTimeMillis() - starts > 3000) {
+						try {
+							mBitmap = BitmapFactory
+									.decodeFile("/storage/sdcard0/DCIM/blank.jpeg");
+							indicator = 1;
+							Toast.makeText(
+									getApplicationContext(),
+									"Operation is taking too long select another image",
+									Toast.LENGTH_LONG).show();
+						} catch (RuntimeException ex) {
+							Toast.makeText(getApplicationContext(),
+									ex.getMessage(), Toast.LENGTH_LONG).show();
+						}
+						return (long) 1;
+					}
+				}
+				publishProgress(25);
+
+			} catch (RuntimeException ex) {
+				// df.show(getFragmentManager(), "Tag");
+				return (long) 1;
+			}
+
+			// opencv.getCornerpoints();
 			publishProgress(35);
+			// if(doContine == 1){return start - System.currentTimeMillis();}
 			long end = System.currentTimeMillis();
 			// byte[] imageData = testCV.getSourceImage();
 
 			byte[] imageData = opencv.getSourceImage();
 			publishProgress(10);
-
+			long elapse = end - start;
+			/*
+			 * Toast.makeText(this, "" + elapse +
+			 * " ms is used to extract features.", Toast.LENGTH_LONG).show();
+			 */
 			mBitmap = BitmapFactory.decodeByteArray(imageData, 0,
 					imageData.length);
 			publishProgress(10);
-
 			return start - System.currentTimeMillis();
 		}
 
@@ -284,15 +466,64 @@ public class IndoorNavigationActivity extends Activity {
 		protected void onPostExecute(Long time) {
 			// updateUI("Done with all the operations, it took:" +
 			// time + " millisecondes");
-			// mImageView.setImageBitmap(mBitmap);
+
 			dismissDialog();
-			if (fragment1 != null)
-				fragment1.showImage(mBitmap);
-			aTask = new MyAsyncTask();
+			if (indicator == 1) {
+				indicator = 0;
+				AlertDialog.Builder df = new AlertDialog.Builder(ctx);
+				df.setTitle("Alert Box");
+				df.setMessage("Computation is taking too much time please try another Image");
+				df.setPositiveButton("Exit",
+						new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								// TODO Auto-generated method stub
+								// mImageView.setImageBitmap(null);
+								if (fragment1 != null)
+									fragment1.showImage(mBitmap);
+								ctx.startActivity(ctx.getIntent());
+							}
+						});
+				df.setNegativeButton("OK",
+						new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								// TODO Auto-generated method stub
+								indicator = 0;
+								Intent galleryIntent = new Intent(
+										Intent.ACTION_PICK,
+										Images.Media.INTERNAL_CONTENT_URI);
+								startActivityForResult(galleryIntent,
+										ACTIVITY_SELECT_IMAGE);
+								// mImageView.setImageBitmap(mBitmap);
+							}
+						});
+				AlertDialog dialog = df.create();
+				dialog.show();
+
+				// df.show();
+				Toast.makeText(getApplicationContext(),
+						"Operation is taking too long select another image",
+						Toast.LENGTH_LONG).show();
+			} else {
+				// mImageView.setImageBitmap(mBitmap);
+				if (fragment1 != null)
+					fragment1.showImage(mBitmap);
+			}
+			// dialogFragment df = new dialogFragment();
+			// df.show(getFragmentManager(), "Tags");
+			aTask = new MyAsyncTask(ctx);
 		}
 
 		@Override
 		protected void onPreExecute() {
+			mBitmap = BitmapFactory.decodeFile(mCurrentImagePath);
+			mBitmap = getResizedBitmap(mBitmap, 480, 640);
+			// mImageView.setImageBitmap(mBitmap);
+			if (fragment1 != null)
+				fragment1.showImage(mBitmap);
 			showDialog();
 			// progressDialog = ProgressDialog.show(getApplicationContext(),
 			// "Please wait....", "Here your message");

@@ -2,6 +2,7 @@
 #include "imageROIExtractor.h"
 #include "constants.h"
 #include<math.h>
+#include<Log.hpp>
 #include "ConvexHull.h"
 #define BLOCKSIZE 30
 #define BLOCKMAX 150
@@ -193,7 +194,10 @@ bool isOnTheSameline(CvPoint p1, CvPoint p2, vector<CvPoint*> &lineContainer){
  bool sortOutAnother(const pair<int,int> p1,const pair<int,int> p2){
 	 return p1.second < p2.second;
  }
-vector< vector< pair<CvPoint,int> > > imageROIExtractor(IplImage* pImage, vector<CvPoint*> &lineContainer,vector<CvPoint> cornerContainer){
+ bool sortOutPointsY(const CvPoint p1,const CvPoint p2){
+ 	 return p1.y == p2.y ? p1.x < p2.x : p1.y < p2.y;
+  }
+vector< vector< pair<CvPoint,int> > > imageROIExtractor(JNIEnv *env,IplImage* pImage, vector<CvPoint*> &lineContainer,vector<CvPoint> cornerContainer){
     
 	int i,j;
 	vector<vector<pair<CvPoint,int> > > superContainer;
@@ -215,6 +219,8 @@ vector< vector< pair<CvPoint,int> > > imageROIExtractor(IplImage* pImage, vector
 		containers.push_back(make_pair<int,pair<int,setStruct > >(i,pairs));
 
     }
+	sbrc::Log::info("right after the container creation\n");
+try{
 	for(i = 0; i < cornerContainer.size(); i++ ){		
 	    for(j = 0; j < cornerContainer.size(); j++){
 			if(i == j)
@@ -227,18 +233,29 @@ vector< vector< pair<CvPoint,int> > > imageROIExtractor(IplImage* pImage, vector
 					//break;
 			}
 		}
+	    sbrc::Log::info("after the set merging\n");
 		//graph.push_back(containers[i].second.second.Node);
 	}
+}catch(...){
+			superContainer.clear();
+			return  superContainer;
+}
+ try{
 	for(i = 0; i < cornerContainer.size(); i++){
 		containers.at(i).first = findSet(containers[i].first,containers);
 		if(i != containers[i].first){
 			superContainer.at(containers[i].first).push_back(make_pair<CvPoint,int>(cornerContainer.at(i),i));
 		}
 	}	
+ }catch(...){
+	 superContainer.clear();
+	 return superContainer;
+ }
 	for(i = 0; i < superContainer.size(); i++){
 		CvPoint cvPoints[2];
 		printf("Set #%d size of %d is %d\n",i,i,superContainer.at(i).size());	
-		if(superContainer.at(i).size() >= 4){
+	  if(superContainer.at(i).size() >= 4){
+		try{
 			sort(superContainer.at(i).begin(),superContainer.at(i).end(),sortOutPointX);
 			for(int j = 0 ; j < superContainer.at(i).size(); j++){
 				cvCircle(img,cvPoint(superContainer.at(i).at(j).first.x,superContainer.at(i).at(j).first.y),fRounds(3),cvScalar(25,i*200,255),2);
@@ -252,31 +269,56 @@ vector< vector< pair<CvPoint,int> > > imageROIExtractor(IplImage* pImage, vector
 					}
 				}
 			}
+		  }catch(...){
+			  superContainer.clear();
+			  return superContainer;
+		   }
 			//graph[i].push_back(containers[i].second.second.Node);
 			indexHoldering.resize(graph.size());
 			cycleIndex = 0;
 			SSC(superContainer.at(i).at(0).second);
 			printf("size of IndexHoldeing %d\n",indexHoldering.size());
+			CvPoint pX;
+			CvPoint pY;
+			pX.x = INF;pX.y = INF; pY.x = -1; pY.y = -1;
+		try{
 			for(int l1 = 0; l1 < indexHoldering.size();l1++){
 				vector<CvPoint> tmpContainerVec;
 				if(indexHoldering.at(l1).size() != 0){
 					for(int l2 = 0; l2 < indexHoldering.at(l1).size()-1; l2++){
-					//	cvDrawLine(img,cornerContainer[indexHoldering.at(l1).at(l2)],cornerContainer[indexHoldering.at(l1).at(l2+1)],cvScalar(255,0,0),2);
+						//cvDrawLine(img,cornerContainer[indexHoldering.at(l1).at(l2)],cornerContainer[indexHoldering.at(l1).at(l2+1)],cvScalar(255,0,0),2);
 						tmpContainerVec.push_back(cornerContainer.at(indexHoldering.at(l1).at(l2)));
 					}
 					printf("Size of the Temp Vector %d\n",tmpContainerVec.size());
 					int sizeVal = convexHull(tmpContainerVec,true);
 					int perpR =   perpLex(tmpContainerVec);
-					if((sizeVal - 2) == tmpContainerVec.size() && perpR == 1)
-					  for(int l2 = 0; l2 < indexHoldering.at(l1).size()-1; l2++)
-						 cvDrawLine(img,cornerContainer[indexHoldering.at(l1).at(l2)],cornerContainer[indexHoldering.at(l1).at(l2+1)],cvScalar(255,0,0),2);
+					int perpR1 = perpLexU(tmpContainerVec);;
+					if((sizeVal - 2) == tmpContainerVec.size() && (perpR == 1|| perpR1 == 1)){
+					//  for(int l2 = 0; l2 < indexHoldering.at(l1).size()-1; l2++)
+						// cvDrawLine(img,cornerContainer[indexHoldering.at(l1).at(l2)],cornerContainer[indexHoldering.at(l1).at(l2+1)],cvScalar(255,0,0),2);
+					  sort(tmpContainerVec.begin(),tmpContainerVec.end(),sortOutPoints);
+					  if(pX.x > tmpContainerVec.at(0).x)
+					  	 pX.x = tmpContainerVec.at(0).x;
+					  if(pY.x < tmpContainerVec.at(tmpContainerVec.size() - 1).x)
+					  	 pY.x = tmpContainerVec.at(tmpContainerVec.size()-1).x;
+					  sort(tmpContainerVec.begin(),tmpContainerVec.end(),sortOutPointsY);
+					  if(pX.y > tmpContainerVec.at(0).y)
+					  	 pX.y = tmpContainerVec.at(0).y;
+					  if(pY.y < tmpContainerVec.at(tmpContainerVec.size() - 1).y)
+					  	 pY.y = tmpContainerVec.at(tmpContainerVec.size() - 1).y;
+				      }
 				//	cvShowImage("cycle",img);
 					// cvWaitKey(0);
-					tmpContainerVec.clear();  
-				}
+					tmpContainerVec.clear();
+
+			   }
 				//break;
 			}
-			
+		}catch(...){
+			superContainer.clear();
+			return superContainer;
+		}
+			cvDrawRect(img,pX,pY,cvScalar(255,0,0),2);
 			indexHoldering.clear();
 			indexHoldering.resize(200);
 			cvPoints[0].x = superContainer.at(i).at(0).first.x;

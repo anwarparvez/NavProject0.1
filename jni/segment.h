@@ -19,7 +19,7 @@ void getEdges(Mat& gray, Mat& grayInt, Mat& grayInt1) {
 	//_tmp.copyTo(_tmp,(_tmp > 0.0));
 	//_tmp1.copyTo(_tmp1,(_tmp1 > 0.0));
 	_tmp1 = abs(_tmp); // + (_tmp1 == 0.0);
-	_tmp1.copyTo(res,(_tmp1 > 0.2));
+	_tmp1.copyTo(res,(_tmp1 > 0.15)); //0.2
 	//res = -res + 1.0;
 
 
@@ -37,7 +37,7 @@ void getEdges(Mat& gray, Mat& grayInt, Mat& grayInt1) {
 	//_tmp = (_tmp + _tmp1 + 2.0) / 4.0;
 	_tmp1 = abs(_tmp);
 	 res.setTo(Scalar(0));
-	_tmp1.copyTo(res,(_tmp1 > 0.2));
+	_tmp1.copyTo(res,(_tmp1 > 0.15));//0.2
 	//res = -res+1.0;
 	
 	minMaxLoc(_tmp,&minVal,&maxVal);

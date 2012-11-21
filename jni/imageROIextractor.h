@@ -6,6 +6,7 @@
 #include<math.h>
 #include<highgui.h>
 #include<stack>
+#include <jni.h>
 using namespace std;
 typedef pair<int,int> pairing;
 typedef vector<pairing> nodes;
@@ -159,4 +160,4 @@ int  findSet(int X,vector<pair<int,pair<int,setStruct> > > &contains);
 float lineLenght(CvPoint* p);
 void initGraph(void);
 void SSC(int node);
-vector<vector<pair<CvPoint,int > > > imageROIExtractor(IplImage* pImage,vector<CvPoint*>&lineContainer,vector<CvPoint> cornerPoints);
+vector<vector<pair<CvPoint,int > > > imageROIExtractor(JNIEnv *env,IplImage* pImage,vector<CvPoint*>&lineContainer,vector<CvPoint> cornerPoints);

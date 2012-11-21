@@ -430,11 +430,24 @@ inline int fRound(float flt){
           return 0;
 
  }
+ void throwJavaException(JNIEnv *env,const char *msg){
+	 jclass c = env->FindClass("java/lang/RuntimeException");
+	 if(c == NULL){
+		 c = env->FindClass("java/lang/NullPointerException");
+	 }
+	 env->ThrowNew(c,msg);
+ }
 
 JNIEXPORT jint JNICALL Java_com_example_opencvtest_OpenCV_getCornerpoints
   (JNIEnv *env, jobject obj){
-	getCornerpoints();
-    imageROIExtractor(pImage,verticalLineholder,voxelGrid->listofPoints);
+	try{
+	 getCornerpoints();
+	}catch(...){
+	 throwJavaException(env,"tag");
+	}
+    if(imageROIExtractor(env,pImage,verticalLineholder,voxelGrid->listofPoints).size() == 0){
+    	throwJavaException(env,"tag");
+    }
 	return 0;
 }
  IplImage* laplace(IplImage* channel) {

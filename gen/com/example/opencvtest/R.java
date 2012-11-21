@@ -41,10 +41,11 @@ public final class R {
         public static final int ic_action_user=0x7f020018;
         public static final int ic_action_user_add=0x7f020019;
         public static final int ic_action_video=0x7f02001a;
-        public static final int ic_launcher=0x7f02001b;
+        public static final int ic_blindnav=0x7f02001b;
+        public static final int ic_launcher=0x7f02001c;
     }
     public static final class id {
-        public static final int btnGetText=0x7f080002;
+        public static final int fdetails=0x7f080002;
         public static final int imageView1=0x7f080001;
         public static final int list=0x7f080006;
         public static final int list_image=0x7f080004;

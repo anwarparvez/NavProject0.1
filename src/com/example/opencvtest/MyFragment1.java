@@ -60,6 +60,7 @@ public class MyFragment1 extends Fragment {
 	public void onStart() {
 
 		super.onStart();
+		
 		mImageView = (ImageView) getActivity().findViewById(R.id.imageView1);
 		Log.d("Fragment 1", "onStart");
 	}
