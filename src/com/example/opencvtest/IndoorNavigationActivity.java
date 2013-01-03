@@ -2,8 +2,6 @@ package com.example.opencvtest;
 
 import java.io.File;
 
-import net.learn2develop.Fragments.Fragment1;
-import net.learn2develop.Fragments.Fragment2;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
@@ -39,8 +37,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-@SuppressLint("NewApi")
-public class IndoorNavigationActivity extends Activity {
+
+public class IndoorNavigationActivity extends Activity implements ActionListFragment.DeviceActionListener{
 	private static final String IMAGE_DIRECTORY = "/sdcard/DCIM/Camera";
 	private static final int ACTIVITY_SELECT_CAMERA = 0;
 	private static final int ACTIVITY_SELECT_IMAGE = 1;
@@ -50,14 +48,10 @@ public class IndoorNavigationActivity extends Activity {
 	private ProgressDialog progressDialog;
 	MyAsyncTask aTask = new MyAsyncTask();
 	Bitmap mBitmap;
-	MyListAdapter adapter;
+
 	private int indicator = 0;
 
 	private static int doContine;
-
-	Fragment1 fragment1;
-
-	String[] presidents;
 
 	private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(this) {
 		@Override
@@ -80,52 +74,13 @@ public class IndoorNavigationActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_layout);
-
-		FragmentManager fragmentManager = getFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager
-				.beginTransaction();
-		fragment1 = new Fragment1();
-		fragmentTransaction.replace(R.id.mdetails, fragment1);
-		fragmentTransaction.addToBackStack(null);
-		fragmentTransaction.commit();
-
+		
 		Log.i(TAG, "Trying to load OpenCV library");
 		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, this,
 				mOpenCVCallBack)) {
 			Log.e(TAG, "Cannot connect to OpenCV Manager");
 
 		}
-
-		ListView list = (ListView) findViewById(R.id.list);
-		adapter = new MyListAdapter(this);
-		list.setAdapter(adapter);
-
-		// Click event for single list row
-		list.setOnItemClickListener(new OnItemClickListener() {
-
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				// TODO Auto-generated method stub
-
-				FragmentManager fragmentManager = getFragmentManager();
-				FragmentTransaction fragmentTransaction = fragmentManager
-						.beginTransaction();
-				if (arg3 == 1) {
-					Fragment2 fragment2 = new Fragment2();
-					fragmentTransaction.replace(R.id.mdetails, fragment2);
-				} else {
-					fragment1 = new Fragment1();
-					fragmentTransaction.replace(R.id.mdetails, fragment1);
-				}
-				fragmentTransaction.addToBackStack(null);
-				fragmentTransaction.commit();
-				Toast.makeText(getApplicationContext(), " " + arg3,
-						Toast.LENGTH_LONG).show();
-				// mImageView = (ImageView) findViewById(R.id.imageView1);
-
-			}
-
-		});
 
 	}
 
@@ -134,10 +89,6 @@ public class IndoorNavigationActivity extends Activity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.activity_test_open_cv, menu);
 		super.onCreateOptionsMenu(menu);
-		/*
-		 * menu.add(0, CAMERA_ID, 0, "Camera"); menu.add(0, GALLERY_ID, 0,
-		 * "Gallery");
-		 */
 		return true;
 	}
 
@@ -210,8 +161,6 @@ public class IndoorNavigationActivity extends Activity {
 		Toast.makeText(this, "" + elapse + " ms is used to extract features.",
 				Toast.LENGTH_LONG).show();
 		mBitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
-		if (fragment1 != null)
-			fragment1.showImage(mBitmap);
 
 	}
 
@@ -480,8 +429,7 @@ public class IndoorNavigationActivity extends Activity {
 									int which) {
 								// TODO Auto-generated method stub
 								// mImageView.setImageBitmap(null);
-								if (fragment1 != null)
-									fragment1.showImage(mBitmap);
+
 								ctx.startActivity(ctx.getIntent());
 							}
 						});
@@ -509,8 +457,7 @@ public class IndoorNavigationActivity extends Activity {
 						Toast.LENGTH_LONG).show();
 			} else {
 				// mImageView.setImageBitmap(mBitmap);
-				if (fragment1 != null)
-					fragment1.showImage(mBitmap);
+
 			}
 			// dialogFragment df = new dialogFragment();
 			// df.show(getFragmentManager(), "Tags");
@@ -522,8 +469,7 @@ public class IndoorNavigationActivity extends Activity {
 			mBitmap = BitmapFactory.decodeFile(mCurrentImagePath);
 			mBitmap = getResizedBitmap(mBitmap, 480, 640);
 			// mImageView.setImageBitmap(mBitmap);
-			if (fragment1 != null)
-				fragment1.showImage(mBitmap);
+
 			showDialog();
 			// progressDialog = ProgressDialog.show(getApplicationContext(),
 			// "Please wait....", "Here your message");
@@ -548,32 +494,7 @@ public class IndoorNavigationActivity extends Activity {
 		if (requestCode == ACTIVITY_SELECT_CAMERA
 				&& resultCode == Activity.RESULT_OK) {
 			aTask.execute(1);
-			/*
-			 * ContentValues values = new ContentValues(); int degrees =
-			 * Utility.getRotationFromImage(mCurrentImagePath); try {
-			 * ExifInterface exif = new ExifInterface(mCurrentImagePath);
-			 * float[] position = new float[2]; if (exif.getLatLong(position)) {
-			 * values.put(Images.Media.LATITUDE, position[0]);
-			 * values.put(Images.Media.LONGITUDE, position[1]); } } catch
-			 * (Exception e) {
-			 * 
-			 * } // reduce the size of image try { BitmapFactory.Options option
-			 * = new BitmapFactory.Options(); option.inSampleSize = 4;
-			 * 
-			 * Bitmap bitmap = BitmapFactory.decodeFile(mCurrentImagePath,
-			 * option); if (degrees != 0) { bitmap = Utility.rotate(bitmap,
-			 * degrees); } FileOutputStream out = new
-			 * FileOutputStream(mCurrentImagePath);
-			 * bitmap.compress(CompressFormat.JPEG, 50, out);
-			 * mImageView.setImageBitmap(bitmap); } catch (Exception e) {
-			 * 
-			 * }
-			 * 
-			 * values.put(Images.Media.MIME_TYPE, "image/jpeg");
-			 * values.put(Images.Media.DATA, mCurrentImagePath);
-			 * values.put(Images.Media.ORIENTATION, degrees);
-			 * getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
-			 */
+
 
 		}
 		if (requestCode == ACTIVITY_SELECT_IMAGE && resultCode == RESULT_OK) {
@@ -592,8 +513,27 @@ public class IndoorNavigationActivity extends Activity {
 		}
 	}
 
-	private void LOGI(String string, String string2) {
-		// TODO Auto-generated method stub
 
+
+	public void showDetails(String device) {
+		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub
+		
+		FragmentManager fragmentManager = getFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		if (device == "image") {
+			ActionDetailFragment actionDetailFragment=new ActionDetailFragment();
+			fragmentTransaction.replace(R.id.mdetails, actionDetailFragment);
+
+		} else {
+			CameraDetailFragment cameraDetailFragment = new CameraDetailFragment();
+			fragmentTransaction.replace(R.id.mdetails, cameraDetailFragment);
+		}
+		
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+
+
+		
 	}
 }

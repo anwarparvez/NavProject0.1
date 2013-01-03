@@ -4,29 +4,34 @@
     android:layout_height="match_parent"
     android:orientation="horizontal" >
 
-    <ListView
-        android:id="@+id/list"
-        android:layout_width="300dp"
+    <fragment
+        android:id="@+id/frag_list"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:background="@android:color/darker_gray" />
+        android:layout_weight=".30"
+        class="com.example.opencvtest.ActionListFragment" />
 
-<!--     <fragment
-        android:id="@+id/mdetails"
-        android:name="net.learn2develop.Fragments.Fragment1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" /> -->
-
-     <FrameLayout
-        android:id="@+id/mdetails"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <FrameLayout
+         android:id="@+id/mdetails"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight=".70" >
+    </FrameLayout>
 
     <!--
          <fragment
-        android:id="@+id/fragment1"
-        android:name="com.example.opencvtest.MyFragment1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:id="@+id/mdetails"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight=".70" 
+        class="com.example.opencvtest.ActionDetailFragment" />
     -->
+
+<!--     <fragment
+        android:id="@+id/mdetails"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight=".70"
+        class="com.example.opencvtest.CameraDetailFragment" /> -->
 
 </LinearLayout>

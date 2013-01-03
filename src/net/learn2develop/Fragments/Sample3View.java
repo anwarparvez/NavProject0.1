@@ -35,12 +35,12 @@ public class Sample3View extends SampleViewBase {
     protected Bitmap processFrame(byte[] data) {
         int[] rgba = mRGBA;
 
-     //   FindFeatures(getFrameWidth(), getFrameHeight(), data, rgba);
+        FindFeatures(getFrameWidth(), getFrameHeight(), data, rgba);
 
         Bitmap bmp = mBitmap; 
         bmp.setPixels(rgba, 0/* offset */, getFrameWidth() /* stride */, 0, 0, getFrameWidth(), getFrameHeight());
         return bmp;
     }
 
-   // public native void FindFeatures(int width, int height, byte yuv[], int[] rgba);
+    public native void FindFeatures(int width, int height, byte yuv[], int[] rgba);
 }
