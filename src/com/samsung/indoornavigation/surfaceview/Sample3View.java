@@ -1,4 +1,4 @@
-package com.example.opencvtest;
+package com.samsung.indoornavigation.surfaceview;
 
 
 import android.content.Context;

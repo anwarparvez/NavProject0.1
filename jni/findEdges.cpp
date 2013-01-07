@@ -2,7 +2,7 @@
 #include <iostream>
 #include "imageMorphology.h"
 #include "constants.h"
-#include "com_example_opencvtest_OpenCV.h"
+#include "com_samsung_indoornavigation_opencv_OpenCV.h"
 #include "segment.h"
 #include<vector>
 #include "voxel.h"
@@ -116,7 +116,7 @@ inline int fRound(float flt){
 	return sum < indexHolder->size()*10;
 }
 
- JNIEXPORT void JNICALL Java_com_example_opencvtest_OpenCV_findEdgesandCorners(JNIEnv *env, jobject jmb,jlong addrRgba)
+ JNIEXPORT void JNICALL Java_com_samsung_indoornavigation_opencv_OpenCV_findEdgesandCorners(JNIEnv *env, jobject jmb,jlong addrRgba)
  {
 
 	    IplImage* img = pImage;
@@ -438,7 +438,7 @@ inline int fRound(float flt){
 	 env->ThrowNew(c,msg);
  }
 
-JNIEXPORT jint JNICALL Java_com_example_opencvtest_OpenCV_getCornerpoints
+JNIEXPORT jint JNICALL Java_com_samsung_indoornavigation_opencv_OpenCV_getCornerpoints
   (JNIEnv *env, jobject obj){
 	try{
 	 getCornerpoints();

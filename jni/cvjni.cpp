@@ -21,7 +21,7 @@
 #include "cv.h"
 #include "cxcore.h"
 #include "bmpfmt.h"
-#include "com_example_opencvtest_OpenCV.h"
+#include "com_samsung_indoornavigation_opencv_OpenCV.h"
 #include <opencv2/highgui/highgui.hpp>
 #include "Log.hpp"
 #include<stdio.h>
@@ -87,7 +87,7 @@ void randomGenerator(void){
   return;
 }
 
-JNIEXPORT void JNICALL Java_com_example_opencvtest_OpenCV_extractSURFFeature(
+JNIEXPORT void JNICALL Java_com_samsung_indoornavigation_opencv_OpenCV_extractSURFFeature(
 		JNIEnv* env, jobject thiz) {
 	LOGI("Start of the feature extraction");
 	IplImage *pWorkImage=cvCreateImage(cvGetSize(pImage),IPL_DEPTH_8U,1);
@@ -120,7 +120,7 @@ JNIEXPORT void JNICALL Java_com_example_opencvtest_OpenCV_extractSURFFeature(
 	LOGI("Feature Extraction done");
 }
 
-JNIEXPORT jboolean JNICALL Java_com_example_opencvtest_OpenCV_setSourceImage(
+JNIEXPORT jboolean JNICALL Java_com_samsung_indoornavigation_opencv_OpenCV_setSourceImage(
 		JNIEnv * env, jobject thiz, jintArray photo_data, jint width,
 		jint height, jstring javaString) {
 
@@ -153,7 +153,7 @@ JNIEXPORT jboolean JNICALL Java_com_example_opencvtest_OpenCV_setSourceImage(
     env->ReleaseStringUTFChars(javaString, nativeString);
 	return 1;
 }
-JNIEXPORT jbyteArray JNICALL Java_com_example_opencvtest_OpenCV_getSourceImage(
+JNIEXPORT jbyteArray JNICALL Java_com_samsung_indoornavigation_opencv_OpenCV_getSourceImage(
 		JNIEnv* env, jobject thiz) {
 	if (pImage == NULL) {
 		LOGE("No source image.");

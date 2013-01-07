@@ -21,7 +21,7 @@
 #include "cv.h"
 #include "cxcore.h"
 #include "bmpfmt.h"
-#include "com_example_opencvtest_OpenCV.h"
+#include "com_samsung_indoornavigation_opencv_OpenCV.h"
 using namespace std;
 using namespace cv;
 #define ANDROID_LOG_VERBOSE ANDROID_LOG_DEBUG
@@ -95,11 +95,11 @@ Mat * getMatImageFromIntArray(JNIEnv* env, jintArray array_data, jint width,
 }
 
 /*
- * Class:     com_example_opencvtest_TestCV
+ * Class:     com_samsung_indoornavigation_opencv_TestCV
  * Method:    setSourceImage
  * Signature: ([III)Z
  */
-JNIEXPORT jboolean JNICALL Java_com_example_opencvtest_TestCV_setSourceImage(
+JNIEXPORT jboolean JNICALL Java_com_samsung_indoornavigation_opencv_TestCV_setSourceImage(
 		JNIEnv* env, jobject thiz, jintArray photo_data, jint width,
 		jint height) {
 
@@ -139,11 +139,11 @@ JNIEXPORT jboolean JNICALL Java_com_example_opencvtest_TestCV_setSourceImage(
 }
 
 /*
- * Class:     com_example_opencvtest_TestCV
+ * Class:     com_samsung_indoornavigation_opencv_TestCV
  * Method:    getSourceImage
  * Signature: ()[B
  */
-JNIEXPORT jbyteArray JNICALL Java_com_example_opencvtest_TestCV_getSourceImage(
+JNIEXPORT jbyteArray JNICALL Java_com_samsung_indoornavigation_opencv_TestCV_getSourceImage(
 		JNIEnv* env, jobject thiz) {
 
 	int height = matImage.rows;
@@ -238,21 +238,21 @@ JNIEXPORT jbyteArray JNICALL Java_com_example_opencvtest_TestCV_getSourceImage(
 }
 
 /*
- * Class:     com_example_opencvtest_TestCV
+ * Class:     com_samsung_indoornavigation_opencv_TestCV
  * Method:    extractSURFFeature
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_com_example_opencvtest_TestCV_extractSURFFeature
+JNIEXPORT void JNICALL Java_com_samsung_indoornavigation_opencv_TestCV_extractSURFFeature
 (JNIEnv *, jobject) {
 
 }
 
 /*
- * Class:     com_example_opencvtest_TestCV
+ * Class:     com_samsung_indoornavigation_opencv_TestCV
  * Method:    findEdgesandCorners
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_com_example_opencvtest_TestCV_findEdgesandCorners
+JNIEXPORT void JNICALL Java_com_samsung_indoornavigation_opencv_TestCV_findEdgesandCorners
 (JNIEnv *, jobject) {
 
 }

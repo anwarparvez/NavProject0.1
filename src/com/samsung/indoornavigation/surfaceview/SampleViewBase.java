@@ -1,4 +1,4 @@
-package com.example.opencvtest;
+package com.samsung.indoornavigation.surfaceview;
 
 import java.io.IOException;
 import java.util.List;

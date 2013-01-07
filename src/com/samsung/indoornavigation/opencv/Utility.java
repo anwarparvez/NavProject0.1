@@ -1,4 +1,4 @@
-package com.example.opencvtest;
+package com.samsung.indoornavigation.opencv;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;

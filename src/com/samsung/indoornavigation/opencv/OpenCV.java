@@ -1,4 +1,4 @@
-package com.example.opencvtest;
+package com.samsung.indoornavigation.opencv;
 
 public class OpenCV {
 	static{

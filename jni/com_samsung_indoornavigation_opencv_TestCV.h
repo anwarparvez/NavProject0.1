@@ -12,7 +12,7 @@ extern "C" {
  * Method:    setSourceImage
  * Signature: ([III)Z
  */
-JNIEXPORT jboolean JNICALL Java_com_example_opencvtest_TestCV_setSourceImage
+JNIEXPORT jboolean JNICALL Java_com_samsung_indoornavigation_opencv_TestCV_setSourceImage
   (JNIEnv *, jobject, jintArray, jint, jint);
 
 /*
