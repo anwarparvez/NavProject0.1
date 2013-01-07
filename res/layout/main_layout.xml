@@ -10,7 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight=".30"
-        class="com.example.opencvtest.ActionListFragment" />
+        class="com.samsung.indoornavigation.fragment.ActionListFragment" />
 
     <FrameLayout
          android:id="@+id/mdetails"

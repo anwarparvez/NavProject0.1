@@ -1,15 +1,9 @@
-package com.example.opencvtest;
+package com.samsung.indoornavigation.fragment;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
-import com.example.opencvtest.ActionDetailFragment.MyAsyncTask;
-
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -17,7 +11,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,15 +20,14 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-public class CameraSelectFragment extends Fragment {
+import com.samsung.indoornavigation.R;
+import com.samsung.indoornavigation.opencv.OpenCV;
 
-	private static final String IMAGE_DIRECTORY = "/sdcard/DCIM/Camera";
-	private static final int ACTIVITY_SELECT_CAMERA = 20;
-	private static final int ACTIVITY_SELECT_IMAGE = 10;
-	private static final String TAG = "MAIN_ACTIVITY";
+public class ActionDetailFragment extends Fragment {
+	protected static final int ACTIVITY_SELECT_IMAGE = 10;
 	View mContentView = null;
 	ProgressBar bar;
-	MyAsyncTask2 mAsyncTask;
+	MyAsyncTask mAsyncTask;
 	String mCurrentImagePath;
 	public OpenCV mOpencv = new OpenCV();
 	Bitmap mBitmap;
@@ -57,20 +49,9 @@ public class CameraSelectFragment extends Fragment {
 				new View.OnClickListener() {
 
 					public void onClick(View v) {
-/*						Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+						Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 						intent.setType("image/*");
-						startActivityForResult(intent, ACTIVITY_SELECT_IMAGE);*/
-						
-						Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-						long timeTaken = System.currentTimeMillis();
-						mCurrentImagePath = IMAGE_DIRECTORY + "/"
-								+ Utility.createName(timeTaken) + ".jpg";
-						//Log.i(TAG, mCurrentImagePath);
-						// fileUri=Uri.fromFile(new File(mCurrentImagePath));
-						cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-								Uri.fromFile(new File(mCurrentImagePath)));
-						startActivityForResult(cameraIntent, ACTIVITY_SELECT_CAMERA);
-
+						startActivityForResult(intent, ACTIVITY_SELECT_IMAGE);
 
 					}
 				});
@@ -79,12 +60,43 @@ public class CameraSelectFragment extends Fragment {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == ACTIVITY_SELECT_CAMERA
+		if (requestCode == ACTIVITY_SELECT_IMAGE
 				&& resultCode == Activity.RESULT_OK) {
-			Log.i("TagMe", mCurrentImagePath.toString() + "\n");
-			// targetImage.setImageBitmap(mBitmap);
-			mAsyncTask = new MyAsyncTask2();
-				mAsyncTask.execute(0);
+
+			Uri currImageURI = data.getData();
+			/*
+			 * Toast.makeText(getActivity(), " " + currImageURI,
+			 * Toast.LENGTH_LONG) .show();
+			 */
+
+			try {
+				mBitmap = BitmapFactory.decodeStream(getActivity()
+						.getContentResolver().openInputStream(currImageURI));
+				ImageView targetImage = (ImageView) mContentView
+						.findViewById(R.id.imageView1);
+				if (mBitmap != null && targetImage != null) {
+
+					String[] proj = { Images.Media.DATA,
+							Images.Media.ORIENTATION };
+					Cursor cursor = getActivity().managedQuery(currImageURI,
+							proj, null, null, null);
+					int columnIndex = cursor.getColumnIndex(proj[0]);
+					cursor.moveToFirst();
+					mCurrentImagePath = cursor.getString(columnIndex);
+					/*
+					 * Toast.makeText(getActivity(), " " + mCurrentImagePath,
+					 * Toast.LENGTH_LONG).show();
+					 */
+					Log.i("TagMe", mCurrentImagePath.toString() + "\n");
+					// targetImage.setImageBitmap(mBitmap);
+					mAsyncTask = new MyAsyncTask();
+					mAsyncTask.execute(0);
+				}
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 	}
 
@@ -102,13 +114,13 @@ public class CameraSelectFragment extends Fragment {
 
 	}
 
-	class MyAsyncTask2 extends AsyncTask<Integer, Integer, Long> {
+	class MyAsyncTask extends AsyncTask<Integer, Integer, Long> {
 
-		public MyAsyncTask2(Activity context) {
+		public MyAsyncTask(Activity context) {
 
 		}
 
-		public MyAsyncTask2() {
+		public MyAsyncTask() {
 			// TODO Auto-generated constructor stub
 		}
 
@@ -120,10 +132,6 @@ public class CameraSelectFragment extends Fragment {
 			// int height = mBitmap.getHeight();
 			// int[] pixels = new int[width * height];
 			// mBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-			if(mCurrentImagePath==null)
-			{
-				return null;
-			}
 			publishProgress(10);
 			mOpencv.setSourceImage(null, 0, 0, mCurrentImagePath);
 			publishProgress(10);

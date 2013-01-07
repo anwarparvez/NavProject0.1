@@ -1,7 +1,6 @@
-package com.example.opencvtest;
+package com.samsung.indoornavigation;
 
 import java.io.File;
-
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
@@ -30,12 +29,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Toast;
+
+import com.samsung.indoornavigation.fragment.ActionDetailFragment;
+import com.samsung.indoornavigation.fragment.ActionListFragment;
+import com.samsung.indoornavigation.fragment.CameraDetailFragment;
+import com.samsung.indoornavigation.fragment.CameraSelectFragment;
+import com.samsung.indoornavigation.opencv.OpenCV;
+import com.samsung.indoornavigation.opencv.Utility;
 
 
 public class IndoorNavigationActivity extends Activity implements ActionListFragment.DeviceActionListener{

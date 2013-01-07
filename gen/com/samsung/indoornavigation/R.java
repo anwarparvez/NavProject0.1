@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package com.example.opencvtest;
+package com.samsung.indoornavigation;
 
 public final class R {
     public static final class array {

@@ -1,4 +1,4 @@
-package com.example.opencvtest;
+package com.samsung.indoornavigation.fragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.samsung.indoornavigation.R;
 
 public class ActionListFragment extends ListFragment{
 	List<String> actions=new ArrayList<String>();

@@ -1,14 +1,15 @@
-package com.example.opencvtest;
+package com.samsung.indoornavigation.fragment;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import com.samsung.indoornavigation.R;
+import com.samsung.indoornavigation.surfaceview.Sample3View;
 
 public class CameraDetailFragment extends Fragment{
 	View mContexView=null;
