@@ -1,4 +1,4 @@
-package net.learn2develop.Fragments;
+package com.example.opencvtest;
 
 
 import android.content.Context;

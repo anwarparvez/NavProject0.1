@@ -525,6 +525,11 @@ public class IndoorNavigationActivity extends Activity implements ActionListFrag
 			ActionDetailFragment actionDetailFragment=new ActionDetailFragment();
 			fragmentTransaction.replace(R.id.mdetails, actionDetailFragment);
 
+		}else if(device == "camera"){
+			CameraSelectFragment cameraSelectFragment=new CameraSelectFragment();
+			fragmentTransaction.replace(R.id.mdetails, cameraSelectFragment);
+
+			
 		} else {
 			CameraDetailFragment cameraDetailFragment = new CameraDetailFragment();
 			fragmentTransaction.replace(R.id.mdetails, cameraDetailFragment);

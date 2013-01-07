@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import net.learn2develop.Fragments.*;
+
 public class CameraDetailFragment extends Fragment{
 	View mContexView=null;
     private static final String TAG = "Sample::Activity";

@@ -22,7 +22,7 @@ JNIEXPORT void JNICALL Java_com_example_opencvtest_OpenCV_FindFeatures(JNIEnv*, 
 	sprintf(logMsg,"width=%d height=%d ",img->width,img->height);
 	sbrc::Log::info(logMsg);
 }
-JNIEXPORT void JNICALL Java_net_learn2develop_Fragments_Sample3View_FindFeatures
+JNIEXPORT void JNICALL Java_com_example_opencvtest_Sample3View_FindFeatures
 (JNIEnv* env, jobject obj, jint width, jint height, jbyteArray yuv, jintArray bgra)
 {
 	jbyte* _yuv = env->GetByteArrayElements(yuv, 0);
