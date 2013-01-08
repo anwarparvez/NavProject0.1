@@ -39,7 +39,7 @@ public class ActionListFragment extends ListFragment{
 
 		private List<String> items;
 		//String[] presidents={"image","video","camera"};
-		int []image_id={R.drawable.content_picture,R.drawable.ic_action_video,R.drawable.device_access_camera};
+		int []image_id={R.drawable.content_picture,R.drawable.device_access_camera,R.drawable.ic_action_video};
 		public ActionListAdapter(Context context, 
 				int textViewResourceId, List<String> objects) {
 			super(context,  textViewResourceId, objects);

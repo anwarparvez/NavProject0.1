@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,10 +26,12 @@ import com.samsung.indoornavigation.opencv.Utility;
 
 public class CameraSelectFragment extends Fragment {
 
-	private static final String IMAGE_DIRECTORY = "/sdcard/DCIM/Camera";
+	private static final String IMAGE_DIRECTORY = Environment
+			.getExternalStorageDirectory().getPath()
+			+ "/DCIM/Camera/";
 	private static final int ACTIVITY_SELECT_CAMERA = 20;
-	private static final int ACTIVITY_SELECT_IMAGE = 10;
-	private static final String TAG = "MAIN_ACTIVITY";
+
+	private static final String TAG = "CameraSelectFragment ";
 	View mContentView = null;
 	ProgressBar bar;
 	MyAsyncTask2 mAsyncTask;
@@ -53,20 +56,25 @@ public class CameraSelectFragment extends Fragment {
 				new View.OnClickListener() {
 
 					public void onClick(View v) {
-/*						Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-						intent.setType("image/*");
-						startActivityForResult(intent, ACTIVITY_SELECT_IMAGE);*/
-						
-						Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+						/*
+						 * Intent intent = new
+						 * Intent(Intent.ACTION_GET_CONTENT);
+						 * intent.setType("image/*");
+						 * startActivityForResult(intent,
+						 * ACTIVITY_SELECT_IMAGE);
+						 */
+
+						Intent cameraIntent = new Intent(
+								MediaStore.ACTION_IMAGE_CAPTURE);
 						long timeTaken = System.currentTimeMillis();
-						mCurrentImagePath = IMAGE_DIRECTORY + "/"
+						mCurrentImagePath = IMAGE_DIRECTORY
 								+ Utility.createName(timeTaken) + ".jpg";
-						//Log.i(TAG, mCurrentImagePath);
+						// Log.i(TAG, mCurrentImagePath);
 						// fileUri=Uri.fromFile(new File(mCurrentImagePath));
 						cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,
 								Uri.fromFile(new File(mCurrentImagePath)));
-						startActivityForResult(cameraIntent, ACTIVITY_SELECT_CAMERA);
-
+						startActivityForResult(cameraIntent,
+								ACTIVITY_SELECT_CAMERA);
 
 					}
 				});
@@ -77,10 +85,10 @@ public class CameraSelectFragment extends Fragment {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == ACTIVITY_SELECT_CAMERA
 				&& resultCode == Activity.RESULT_OK) {
-			Log.i("TagMe", mCurrentImagePath.toString() + "\n");
+			Log.i(TAG, mCurrentImagePath.toString() + "\n");
 			// targetImage.setImageBitmap(mBitmap);
 			mAsyncTask = new MyAsyncTask2();
-				mAsyncTask.execute(0);
+			mAsyncTask.execute(0);
 		}
 	}
 
@@ -116,8 +124,7 @@ public class CameraSelectFragment extends Fragment {
 			// int height = mBitmap.getHeight();
 			// int[] pixels = new int[width * height];
 			// mBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-			if(mCurrentImagePath==null)
-			{
+			if (mCurrentImagePath == null) {
 				return null;
 			}
 			publishProgress(10);

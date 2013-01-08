@@ -7,8 +7,10 @@
     <string name="menu_video">video</string>
     <string name="menu_camera">camera</string>
     <string name="menu_image">image</string>
+    <string name="menu_help">help</string>
+    <string name="select_image_btn">Select Image</string>
 
-    <string-array name="presidents_array">
+<!--     <string-array name="presidents_array">
         <item>Dwight D. Eisenhower</item>
         <item>John F. Kennedy</item>
         <item>Lyndon B. Johnson</item>
@@ -20,6 +22,6 @@
         <item>Bill Clinton</item>
         <item>George W. Bush</item>
         <item>Barack Obama</item>
-    </string-array>
+    </string-array> -->
 
 </resources>

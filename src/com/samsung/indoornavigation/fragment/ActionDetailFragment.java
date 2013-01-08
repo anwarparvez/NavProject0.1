@@ -1,9 +1,8 @@
 package com.samsung.indoornavigation.fragment;
 
-import java.io.FileNotFoundException;
-
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -12,7 +11,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,19 +55,40 @@ public class ActionDetailFragment extends Fragment {
 				});
 		return mContentView;
 	}
+	/**
+	 * Gets the corresponding path to a file from the given content:// URI
+	 * @param selectedUri The content:// URI to find the file path from
+	 * @param contentResolver The content resolver to use to perform the query.
+	 * @return the file path as a string
+	 */
+	private String getFilePathFromContentUri(Uri selectedUri,
+	        ContentResolver contentResolver) {
+	    String filePath;
+	    String[] filePathColumn = {Images.Media.DATA};
 
+	    Cursor cursor = contentResolver.query(selectedUri, filePathColumn, null, null, null);
+	    cursor.moveToFirst();
+
+	    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+	    filePath = cursor.getString(columnIndex);
+	    cursor.close();
+	    return filePath;
+	}
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == ACTIVITY_SELECT_IMAGE
 				&& resultCode == Activity.RESULT_OK) {
 
 			Uri currImageURI = data.getData();
+			mCurrentImagePath = getFilePathFromContentUri(currImageURI,getActivity().getContentResolver());
+			mAsyncTask = new MyAsyncTask();
+			mAsyncTask.execute(0);
 			/*
 			 * Toast.makeText(getActivity(), " " + currImageURI,
 			 * Toast.LENGTH_LONG) .show();
 			 */
 
-			try {
+		/*	try {
 				mBitmap = BitmapFactory.decodeStream(getActivity()
 						.getContentResolver().openInputStream(currImageURI));
 				ImageView targetImage = (ImageView) mContentView
@@ -82,21 +101,20 @@ public class ActionDetailFragment extends Fragment {
 							proj, null, null, null);
 					int columnIndex = cursor.getColumnIndex(proj[0]);
 					cursor.moveToFirst();
-					mCurrentImagePath = cursor.getString(columnIndex);
-					/*
+					mCurrentImagePath = getFilePathFromContentUri(currImageURI,getActivity().getContentResolver());
+					
 					 * Toast.makeText(getActivity(), " " + mCurrentImagePath,
 					 * Toast.LENGTH_LONG).show();
-					 */
-					Log.i("TagMe", mCurrentImagePath.toString() + "\n");
+					 
+					Log.i("TagMe", mCurrentImagePath.toString() +"\n");
 					// targetImage.setImageBitmap(mBitmap);
-					mAsyncTask = new MyAsyncTask();
-					mAsyncTask.execute(0);
+
 				}
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
+*/
 		}
 	}
 
