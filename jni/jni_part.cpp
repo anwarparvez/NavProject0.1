@@ -12,20 +12,6 @@ using namespace cv;
 
 extern "C" {
 
-extern IplImage* pImage;
-
-
-JNIEXPORT void JNICALL Java_com_samsung_indoornavigation_opencv_OpenCV_FindFeatures(JNIEnv*, jobject, jlong addrGray, jlong addrRgba)
-{
-char logMsg[100];
-Mat* pMatGr=(Mat*)addrGray;
-Mat* pMatRgb=(Mat*)addrRgba;
-sbrc::Log::info("Log print");
-pImage=&((IplImage)(*pMatRgb));
-IplImage *img=pImage;
-sprintf(logMsg,"width=%d height=%d ",img->width,img->height);
-sbrc::Log::info(logMsg);
-}
 JNIEXPORT void JNICALL Java_com_samsung_indoornavigation_surfaceview_Sample3View_FindFeatures
 (JNIEnv* env, jobject obj, jint width, jint height, jbyteArray yuv, jintArray bgra)
 {

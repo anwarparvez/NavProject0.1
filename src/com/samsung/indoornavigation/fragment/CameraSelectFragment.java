@@ -2,11 +2,13 @@ package com.samsung.indoornavigation.fragment;
 
 import java.io.File;
 
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,8 +23,11 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.samsung.indoornavigation.R;
+import com.samsung.indoornavigation.opencv.ImageUtility;
 import com.samsung.indoornavigation.opencv.OpenCV;
 import com.samsung.indoornavigation.opencv.Utility;
+
+
 
 public class CameraSelectFragment extends Fragment {
 
@@ -127,23 +132,22 @@ public class CameraSelectFragment extends Fragment {
 			if (mCurrentImagePath == null) {
 				return null;
 			}
-			publishProgress(10);
-			mOpencv.setSourceImage(null, 0, 0, mCurrentImagePath);
-			publishProgress(10);
+			Mat mat=new Mat();
+			mBitmap=ImageUtility.getBitmapFromLocalPath(mCurrentImagePath,1);
+			Utils.bitmapToMat(mBitmap, mat);
+			publishProgress(30);
+			mOpencv.doProcess(mat.getNativeObjAddr());
 
-			mOpencv.findEdgesandCorners();
-			publishProgress(10);
-			mOpencv.getCornerpoints();
-			publishProgress(10);
-			byte[] imageData = mOpencv.getSourceImage();
-			publishProgress(10);
+			//mOpencv.setSourceImage(null,0,0,mCurrentImagePath);
+			publishProgress(30);
+			Utils.matToBitmap(mat,mBitmap);
 
 			/*
 			 * Toast.makeText(this, "" + elapse +
 			 * " ms is used to extract features.", Toast.LENGTH_LONG).show();
 			 */
-			mBitmap = BitmapFactory.decodeByteArray(imageData, 0,
-					imageData.length);
+			/*mBitmap = BitmapFactory.decodeByteArray(imageData, 0,
+					imageData.length);*/
 
 			long end = System.currentTimeMillis();
 			long elapse = end - start;

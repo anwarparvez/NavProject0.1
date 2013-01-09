@@ -2,13 +2,13 @@ package com.samsung.indoornavigation.fragment;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.samsung.indoornavigation.R;
+import com.samsung.indoornavigation.opencv.ImageUtility;
 import com.samsung.indoornavigation.opencv.OpenCV;
 
 public class ActionDetailFragment extends Fragment {
@@ -137,21 +138,7 @@ public class ActionDetailFragment extends Fragment {
 		 */
 
 	}
-	  public static Bitmap getBitmapFromLocalPath(String path, int sampleSize)
-	  {
-	    try
-	    {
-	      BitmapFactory.Options options = new BitmapFactory.Options();
-	      options.inSampleSize = sampleSize;
-	      return BitmapFactory.decodeFile(path, options);
-	    }
-	    catch(Exception e)
-	    {
-	    //  Logger.e(e.toString());
-	    }
-	    
-	    return null;
-	  }
+
 
 	class MyAsyncTask extends AsyncTask<Integer, Integer, Long> {
 
@@ -171,14 +158,16 @@ public class ActionDetailFragment extends Fragment {
 			// int height = mBitmap.getHeight();
 			// int[] pixels = new int[width * height];
 			// mBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-			publishProgress(10);
+		
 			Mat mat=new Mat();
-			mBitmap=getBitmapFromLocalPath(mCurrentImagePath,1);
+			mBitmap=ImageUtility.getBitmapFromLocalPath(mCurrentImagePath,1);
 			Utils.bitmapToMat(mBitmap, mat);
-			mOpencv.setSourceImage3( mCurrentImagePath,mat.getNativeObjAddr());
+			publishProgress(30);
+			mOpencv.doProcess(mat.getNativeObjAddr());
 
 			//mOpencv.setSourceImage(null,0,0,mCurrentImagePath);
-			publishProgress(10);
+			publishProgress(30);
+			Utils.matToBitmap(mat,mBitmap);
 
 /*			mOpencv.findEdgesandCorners();
 			publishProgress(10);
@@ -189,7 +178,7 @@ public class ActionDetailFragment extends Fragment {
 			/*byte[] imageData = mOpencv.getSourceImage();
 			mBitmap = BitmapFactory.decodeByteArray(imageData, 0,
 					imageData.length);*/
-			Utils.matToBitmap(mat,mBitmap);
+
 
 			publishProgress(10);
 
