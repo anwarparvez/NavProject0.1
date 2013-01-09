@@ -1,5 +1,7 @@
 package com.samsung.indoornavigation.fragment;
 
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentResolver;
@@ -55,32 +57,39 @@ public class ActionDetailFragment extends Fragment {
 				});
 		return mContentView;
 	}
+
 	/**
 	 * Gets the corresponding path to a file from the given content:// URI
-	 * @param selectedUri The content:// URI to find the file path from
-	 * @param contentResolver The content resolver to use to perform the query.
+	 * 
+	 * @param selectedUri
+	 *            The content:// URI to find the file path from
+	 * @param contentResolver
+	 *            The content resolver to use to perform the query.
 	 * @return the file path as a string
 	 */
 	private String getFilePathFromContentUri(Uri selectedUri,
-	        ContentResolver contentResolver) {
-	    String filePath;
-	    String[] filePathColumn = {Images.Media.DATA};
+			ContentResolver contentResolver) {
+		String filePath;
+		String[] filePathColumn = { Images.Media.DATA };
 
-	    Cursor cursor = contentResolver.query(selectedUri, filePathColumn, null, null, null);
-	    cursor.moveToFirst();
+		Cursor cursor = contentResolver.query(selectedUri, filePathColumn,
+				null, null, null);
+		cursor.moveToFirst();
 
-	    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-	    filePath = cursor.getString(columnIndex);
-	    cursor.close();
-	    return filePath;
+		int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+		filePath = cursor.getString(columnIndex);
+		cursor.close();
+		return filePath;
 	}
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == ACTIVITY_SELECT_IMAGE
 				&& resultCode == Activity.RESULT_OK) {
 
 			Uri currImageURI = data.getData();
-			mCurrentImagePath = getFilePathFromContentUri(currImageURI,getActivity().getContentResolver());
+			mCurrentImagePath = getFilePathFromContentUri(currImageURI,
+					getActivity().getContentResolver());
 			mAsyncTask = new MyAsyncTask();
 			mAsyncTask.execute(0);
 			/*
@@ -88,33 +97,30 @@ public class ActionDetailFragment extends Fragment {
 			 * Toast.LENGTH_LONG) .show();
 			 */
 
-		/*	try {
-				mBitmap = BitmapFactory.decodeStream(getActivity()
-						.getContentResolver().openInputStream(currImageURI));
-				ImageView targetImage = (ImageView) mContentView
-						.findViewById(R.id.imageView1);
-				if (mBitmap != null && targetImage != null) {
-
-					String[] proj = { Images.Media.DATA,
-							Images.Media.ORIENTATION };
-					Cursor cursor = getActivity().managedQuery(currImageURI,
-							proj, null, null, null);
-					int columnIndex = cursor.getColumnIndex(proj[0]);
-					cursor.moveToFirst();
-					mCurrentImagePath = getFilePathFromContentUri(currImageURI,getActivity().getContentResolver());
-					
-					 * Toast.makeText(getActivity(), " " + mCurrentImagePath,
-					 * Toast.LENGTH_LONG).show();
-					 
-					Log.i("TagMe", mCurrentImagePath.toString() +"\n");
-					// targetImage.setImageBitmap(mBitmap);
-
-				}
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-*/
+			/*
+			 * try { mBitmap = BitmapFactory.decodeStream(getActivity()
+			 * .getContentResolver().openInputStream(currImageURI)); ImageView
+			 * targetImage = (ImageView) mContentView
+			 * .findViewById(R.id.imageView1); if (mBitmap != null &&
+			 * targetImage != null) {
+			 * 
+			 * String[] proj = { Images.Media.DATA, Images.Media.ORIENTATION };
+			 * Cursor cursor = getActivity().managedQuery(currImageURI, proj,
+			 * null, null, null); int columnIndex =
+			 * cursor.getColumnIndex(proj[0]); cursor.moveToFirst();
+			 * mCurrentImagePath =
+			 * getFilePathFromContentUri(currImageURI,getActivity
+			 * ().getContentResolver());
+			 * 
+			 * Toast.makeText(getActivity(), " " + mCurrentImagePath,
+			 * Toast.LENGTH_LONG).show();
+			 * 
+			 * Log.i("TagMe", mCurrentImagePath.toString() +"\n"); //
+			 * targetImage.setImageBitmap(mBitmap);
+			 * 
+			 * } } catch (FileNotFoundException e) { // TODO Auto-generated
+			 * catch block e.printStackTrace(); }
+			 */
 		}
 	}
 
@@ -131,6 +137,21 @@ public class ActionDetailFragment extends Fragment {
 		 */
 
 	}
+	  public static Bitmap getBitmapFromLocalPath(String path, int sampleSize)
+	  {
+	    try
+	    {
+	      BitmapFactory.Options options = new BitmapFactory.Options();
+	      options.inSampleSize = sampleSize;
+	      return BitmapFactory.decodeFile(path, options);
+	    }
+	    catch(Exception e)
+	    {
+	    //  Logger.e(e.toString());
+	    }
+	    
+	    return null;
+	  }
 
 	class MyAsyncTask extends AsyncTask<Integer, Integer, Long> {
 
@@ -151,22 +172,26 @@ public class ActionDetailFragment extends Fragment {
 			// int[] pixels = new int[width * height];
 			// mBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
 			publishProgress(10);
-			mOpencv.setSourceImage(null, 0, 0, mCurrentImagePath);
+			Mat mat=new Mat();
+			mBitmap=getBitmapFromLocalPath(mCurrentImagePath,1);
+			Utils.bitmapToMat(mBitmap, mat);
+			mOpencv.setSourceImage3( mCurrentImagePath,mat.getNativeObjAddr());
+
+			//mOpencv.setSourceImage(null,0,0,mCurrentImagePath);
 			publishProgress(10);
 
-			mOpencv.findEdgesandCorners();
+/*			mOpencv.findEdgesandCorners();
 			publishProgress(10);
 			mOpencv.getCornerpoints();
-			publishProgress(10);
-			byte[] imageData = mOpencv.getSourceImage();
-			publishProgress(10);
-
-			/*
-			 * Toast.makeText(this, "" + elapse +
-			 * " ms is used to extract features.", Toast.LENGTH_LONG).show();
-			 */
+			publishProgress(10);*/
+			
+			
+			/*byte[] imageData = mOpencv.getSourceImage();
 			mBitmap = BitmapFactory.decodeByteArray(imageData, 0,
-					imageData.length);
+					imageData.length);*/
+			Utils.matToBitmap(mat,mBitmap);
+
+			publishProgress(10);
 
 			long end = System.currentTimeMillis();
 			long elapse = end - start;

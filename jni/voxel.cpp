@@ -1,4 +1,13 @@
-#include "voxel.h"
+#include "Voxel.h"
+
+Voxel::Voxel(void)
+{
+}
+
+Voxel::~Voxel(void)
+{
+}
+
 
 bool compareOut( CvPoint p1,  CvPoint p2){
 	 return p1.x == p2.x ? p1.y < p2.y : p1.x < p2.x;
@@ -66,7 +75,7 @@ void Voxel::voxelFiltering(){
 }
 void Voxel::maxminFinder(){
 
-
+    
         for(long j=0;j<cloudDim;j++){
 
 			if(pointCloud->at(j).x > maxMin[0][0].x)
@@ -92,3 +101,4 @@ void Voxel::maxminFinder(){
 
     return;
 }
+

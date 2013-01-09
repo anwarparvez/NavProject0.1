@@ -18,11 +18,13 @@
 #include<vector>
 #include <jni.h>
 #include <android/log.h>
-#include "cv.h"
-#include "cxcore.h"
+
 #include "bmpfmt.h"
 #include "com_samsung_indoornavigation_opencv_OpenCV.h"
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/features2d/features2d.hpp>
 #include "Log.hpp"
 #include<stdio.h>
 #include<iostream>
@@ -31,11 +33,18 @@
 #include<stdlib.h>
 #include<time.h>
 #include<string.h>
+#include "EdgeFinder.h"
+#include "CornerFinder.h"
+#include "ROIExtractor.h"
+
 using namespace std;
+
 #define MAX 1000000
 #define FOR(x,a,b) for(int x = a; x<=b; x++)
 
 using namespace std;
+using namespace cv;
+
 #define ANDROID_LOG_VERBOSE ANDROID_LOG_DEBUG
 #define LOG_TAG "CVJNI"
 #define LOGV(...) __android_log_print(ANDROID_LOG_SILENT, LOG_TAG, __VA_ARGS__)
@@ -44,23 +53,12 @@ using namespace std;
 #ifdef __cplusplus
 extern "C" {
 #endif
-IplImage* pImage=NULL;;
+IplImage* pImage=NULL;
+
 IplImage* loadPixels(int* pixels, int width, int height);
 IplImage* getIplImageFromIntArray(JNIEnv* env, jintArray array_data,
 		jint width, jint height);
-/*void randomGenerator(void){
 
-  srand(time(NULL));
-  int val;
-  int coutner = 0;
-  while((val = rand())){
-  
-   sbrc::Log::info("%lf\n",(double)val*0.02);
-	if(coutner++ == 2000)
-		break;
-  }
-  return;
-}*/
 int comp(const void *a ,const void *b){
 	if(*((double*)a)>*((double *)b))
 		return 1;
@@ -87,37 +85,56 @@ void randomGenerator(void){
   return;
 }
 
-JNIEXPORT void JNICALL Java_com_samsung_indoornavigation_opencv_OpenCV_extractSURFFeature(
-		JNIEnv* env, jobject thiz) {
-	LOGI("Start of the feature extraction");
-	IplImage *pWorkImage=cvCreateImage(cvGetSize(pImage),IPL_DEPTH_8U,1);
-	cvCvtColor(pImage,pWorkImage,CV_BGR2GRAY);
-	CvMemStorage* storage = cvCreateMemStorage(0);
-	CvSeq *imageKeypoints = 0, *imageDescriptors = 0;
-	CvSURFParams params = cvSURFParams(2000, 0);
-	LOGI("Start Extracting the feature");
-	if(pWorkImage == NULL){
-		LOGI("The image is null");
-	}
-	//cvExtractSURF( pWorkImage, 0, &imageKeypoints, &imageDescriptors, storage, params );
-	//SurfFeatureDetector detector(400);
-	//detector.detect(img_fg, keypoints);
-	// show features
-    LOGI("End of the feature extraction");
-	for( int i = 0; i < imageKeypoints->total; i++ )
-	{
-		CvSURFPoint* r = (CvSURFPoint*)cvGetSeqElem( imageKeypoints, i );
-		CvPoint center;
-		int radius;
-		center.x = cvRound(r->pt.x);
-		center.y = cvRound(r->pt.y);
-		radius = cvRound(r->size*1.2/9.*2);
-		cvCircle( pImage, center, radius, CV_RGB(255,0,0), 1, CV_AA, 0 );
-	}
-	LOGI("End of the operation");
-	cvReleaseImage(&pWorkImage);
-	cvReleaseMemStorage(&storage);
-	LOGI("Feature Extraction done");
+JNIEXPORT jboolean JNICALL Java_com_samsung_indoornavigation_opencv_OpenCV_setSourceImage3(
+		JNIEnv * env, jobject thiz, jstring javaString,jlong addrRgba){
+
+		sbrc::Log::info("set Image Start");
+	    Mat* pMatRgb=(Mat*)addrRgba;
+		//Do something with the Image
+	   // rectangle(*pMatRgb, cvPoint(20, 15), cvPoint(100, 70), cvScalar(255, 0, 0, 0),1, 8, 0);
+
+	    Mat src=pMatRgb->clone();
+	    IplImage* img = &(IplImage)src;
+
+	    //imshow("EdgeFinder",(Mat) ef.doProcess());
+		if (img == NULL) {
+			sbrc::Log::info("Image load Failed");
+			return 0;
+		}
+
+	    sbrc::Log::info("clone done");
+	    EdgeFinder ef(img);
+	    sbrc::Log::info("EdgeFinder  init done");
+	    ef.doProcess();
+
+		sbrc::Log::info("Load Image Done.");
+
+		CornerFinder cf;
+		cf.setVeticalLineHolder(ef.getVeticalLineHolder());
+		sbrc::Log::info("setVeticalLineHolder Done.");
+		cf.setOtherLineHolder(ef.getOtherLineHolder());
+		sbrc::Log::info("cf.setOtherLineHolder Done.");
+		cf.getCornerpoints(img);
+
+		sbrc::Log::info(".getCornerpoints Done.");
+
+	/*	vector<CvPoint> superContainer=cf.getVoxelGrid()->listofPoints;
+		for(int i = 0; i < superContainer.size(); i++){
+		circle(*pMatRgb,cvPoint(superContainer.at(i).x,superContainer.at(i).y),1,cvScalar(25,i*200,255),2);
+		}*/
+
+		ROIExtractor roiExtractor;
+
+		/*vector<vector<pair<CvPoint, int> > > imageROIExtractor(
+				vector<CvPoint*>&lineContainer, vector<CvPoint> cornerPoints,
+				IplImage *img, Mat *imgMat);*/
+
+		vector<CvPoint*> lineContainer=cf.getVeticalLineHolder();
+		vector<CvPoint> cornerPoints=cf.getVoxelGrid()->listofPoints;
+
+		vector < vector < pair<CvPoint, int > > > container = roiExtractor.imageROIExtractor(lineContainer,cornerPoints,( IplImage* ) img,(Mat *)pMatRgb);
+
+		return 1;
 }
 
 JNIEXPORT jboolean JNICALL Java_com_samsung_indoornavigation_opencv_OpenCV_setSourceImage(
