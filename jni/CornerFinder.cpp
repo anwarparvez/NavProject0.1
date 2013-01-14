@@ -9,4 +9,4 @@ CornerFinder::CornerFinder(void)
 CornerFinder::~CornerFinder(void)
 {
 }
-*/
+ */

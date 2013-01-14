@@ -17,7 +17,5 @@ EdgeFinder::EdgeFinder(IplImage* imgfile) {
 
 }
 
-
-
 EdgeFinder::~EdgeFinder(void) {
 }

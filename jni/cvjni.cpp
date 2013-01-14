@@ -37,6 +37,7 @@
 #include "EdgeFinder.h"
 #include "CornerFinder.h"
 #include "ROIExtractor.h"
+#include "WaterShad.h"
 
 using namespace std;
 using namespace cv;
@@ -46,58 +47,75 @@ using namespace cv;
 extern "C" {
 #endif
 
-JNIEXPORT jboolean JNICALL Java_com_samsung_indoornavigation_opencv_OpenCV_doProcess(
-		JNIEnv * env, jobject thiz, jlong addrRgba){
+    JNIEXPORT jboolean JNICALL Java_com_samsung_indoornavigation_opencv_OpenCV_doProcess(
+            JNIEnv * env, jobject thiz, jlong addrRgba) {
 
-		sbrc::Log::info("set Image Start");
-	    Mat* pMatRgb=(Mat*)addrRgba;
-		//Do something with the Image
-	   // rectangle(*pMatRgb, cvPoint(20, 15), cvPoint(100, 70), cvScalar(255, 0, 0, 0),1, 8, 0);
+        sbrc::Log::info("set Image Start");
+        Mat* pMatRgb = (Mat*) addrRgba;
+        //Do something with the Image
+        // rectangle(*pMatRgb, cvPoint(20, 15), cvPoint(100, 70), cvScalar(255, 0, 0, 0),1, 8, 0);
 
-	    Mat src=pMatRgb->clone();
-	    IplImage* img = &(IplImage)src;
 
-	    //imshow("EdgeFinder",(Mat) ef.doProcess());
-		if (img == NULL) {
-			sbrc::Log::info("Image load Failed");
-			return 0;
-		}
 
-	    sbrc::Log::info("clone done");
-	    EdgeFinder ef(img);
-	    sbrc::Log::info("EdgeFinder  init done");
-	    ef.doProcess();
+        Mat src = pMatRgb->clone();
+        IplImage* img = &(IplImage) src;
 
-		sbrc::Log::info("Load Image Done.");
+        //imshow("EdgeFinder",(Mat) ef.doProcess());
+        if (img == NULL) {
+            sbrc::Log::info("Image load Failed");
+            return 0;
+        }
 
-		CornerFinder cf;
-		cf.setVeticalLineHolder(ef.getVeticalLineHolder());
-		sbrc::Log::info("setVeticalLineHolder Done.");
-		cf.setOtherLineHolder(ef.getOtherLineHolder());
-		sbrc::Log::info("cf.setOtherLineHolder Done.");
-		cf.getCornerpoints(img);
+        sbrc::Log::info("clone done");
+        EdgeFinder ef(img);
+        sbrc::Log::info("EdgeFinder  init done");
+        ef.doProcess();
 
-		sbrc::Log::info(".getCornerpoints Done.");
+        sbrc::Log::info("Load Image Done.");
 
-	/*	vector<CvPoint> superContainer=cf.getVoxelGrid()->listofPoints;
-		for(int i = 0; i < superContainer.size(); i++){
-		circle(*pMatRgb,cvPoint(superContainer.at(i).x,superContainer.at(i).y),1,cvScalar(25,i*200,255),2);
-		}*/
+        CornerFinder cf;
+        cf.setVeticalLineHolder(ef.getVeticalLineHolder());
+        sbrc::Log::info("setVeticalLineHolder Done.");
+        cf.setOtherLineHolder(ef.getOtherLineHolder());
+        sbrc::Log::info("cf.setOtherLineHolder Done.");
+        cf.getCornerpoints(img);
 
-		ROIExtractor roiExtractor;
+        sbrc::Log::info(".getCornerpoints Done.");
 
-		/*vector<vector<pair<CvPoint, int> > > imageROIExtractor(
-				vector<CvPoint*>&lineContainer, vector<CvPoint> cornerPoints,
-				IplImage *img, Mat *imgMat);*/
+        /*	vector<CvPoint> superContainer=cf.getVoxelGrid()->listofPoints;
+                for(int i = 0; i < superContainer.size(); i++){
+                circle(*pMatRgb,cvPoint(superContainer.at(i).x,superContainer.at(i).y),1,cvScalar(25,i*200,255),2);
+                }*/
 
-		vector<CvPoint*> lineContainer=cf.getVeticalLineHolder();
-		vector<CvPoint> cornerPoints=cf.getVoxelGrid()->listofPoints;
+        ROIExtractor roiExtractor;
 
-		vector < vector < pair<CvPoint, int > > > container = roiExtractor.imageROIExtractor(lineContainer,cornerPoints,( IplImage* ) img,(Mat *)pMatRgb);
+        /*vector<vector<pair<CvPoint, int> > > imageROIExtractor(
+                        vector<CvPoint*>&lineContainer, vector<CvPoint> cornerPoints,
+                        IplImage *img, Mat *imgMat);*/
 
-		return 1;
-}
+        vector<CvPoint*> lineContainer = cf.getVeticalLineHolder();
+        vector<CvPoint> cornerPoints = cf.getVoxelGrid()->listofPoints;
 
+        vector < vector < pair<CvPoint, int > > > container = roiExtractor.imageROIExtractor(lineContainer, cornerPoints, (IplImage*) img, (Mat *) pMatRgb);
+
+        return 1;
+    }
+    JNIEXPORT jboolean JNICALL Java_com_samsung_indoornavigation_opencv_OpenCV_doProcess2(
+               JNIEnv * env, jobject thiz, jlong addrRgba) {
+
+           sbrc::Log::info("set Image Start");
+           Mat* pMatRgb = (Mat*) addrRgba;
+           //Do something with the Image
+           // rectangle(*pMatRgb, cvPoint(20, 15), cvPoint(100, 70), cvScalar(255, 0, 0, 0),1, 8, 0);
+
+
+           WaterShad ws;
+           sbrc::Log::info(" WaterShad Start");
+           ws.drawContour( *pMatRgb);
+
+
+           return 1;
+       }
 
 #ifdef __cplusplus
 }

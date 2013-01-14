@@ -2,6 +2,7 @@
 #define _PACKT_LOG_HPP_
 
 namespace sbrc {
+
     class Log {
     public:
         static void error(const char* pMessage, ...);

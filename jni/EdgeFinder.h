@@ -164,7 +164,7 @@ public:
 
         doNormalize(mfinalOut);
         //imshow("normalization and sooth", mfinalOut);
-       // waitKey();
+        // waitKey();
 
         Mat grad_x, grad_y, gray1;
         getSobelDerivatives(mfinalOut, grad_x, grad_y);
@@ -195,15 +195,15 @@ public:
 
         CvSeq* lines = getHoughLines((Mat) finalOut, store);
         sbrc::Log::info("lines done");
-       // CvSeq* lines = linez;
+        // CvSeq* lines = linez;
 
         //draw lines
         for (int i = 0; i < lines->total; i++) {
             CvPoint* line = (CvPoint*) cvGetSeqElem(lines, i);
             cvLine(imgOnwork, line[0], line[1], CV_RGB(255, 0, 0), 3, 8);
         }
-       // imshow("normalization and sooth", (Mat) img);
-       // waitKey();
+        // imshow("normalization and sooth", (Mat) img);
+        // waitKey();
 
         if (lines == NULL || lines->total < 0) {
             printf("No Line Found Programe is exiting\n");
@@ -263,8 +263,8 @@ public:
             }
             for (int i = 0; i < indexHolder->size(); i++)
                 imageMap[indexHolder->at(i)] = 1;
-          //  cvShowImage("Ransac", imgOnwork);
-           // cvWaitKey(0);
+            //  cvShowImage("Ransac", imgOnwork);
+            // cvWaitKey(0);
         }
 
         cout << "size of other lines " << otherLines.size() << "\n";

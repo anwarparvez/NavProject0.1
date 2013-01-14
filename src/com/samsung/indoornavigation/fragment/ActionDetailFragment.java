@@ -163,7 +163,7 @@ public class ActionDetailFragment extends Fragment {
 			mBitmap=ImageUtility.getBitmapFromLocalPath(mCurrentImagePath,1);
 			Utils.bitmapToMat(mBitmap, mat);
 			publishProgress(30);
-			mOpencv.doProcess(mat.getNativeObjAddr());
+			mOpencv.doProcess2(mat.getNativeObjAddr());
 
 			//mOpencv.setSourceImage(null,0,0,mCurrentImagePath);
 			publishProgress(30);

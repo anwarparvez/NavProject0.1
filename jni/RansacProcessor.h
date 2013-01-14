@@ -82,7 +82,7 @@ public:
 
             npoints_b = 0;
             num_inliers = 0;
-            
+
             Ransac();
             if (num_inliers > 0) {
                 printf("Model found.\n");
@@ -158,7 +158,8 @@ public:
         }
         printf("Number of Inliers %d .\n", best_inliers.size());
     }
-// An inlier is a data value that lies in the interior of a statistical distribution and is in error.
+    // An inlier is a data value that lies in the interior of a statistical distribution and is in error.
+
     void find_inliers() {
         int i = 0;
         num_inliers = 0;

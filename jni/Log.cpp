@@ -4,11 +4,12 @@
 #include <android/log.h>
 
 namespace sbrc {
+
     void Log::info(const char* pMessage, ...) {
         va_list lVarArgs;
         va_start(lVarArgs, pMessage);
         __android_log_vprint(ANDROID_LOG_INFO, "Indoor Navigation", pMessage,
-            lVarArgs);
+                lVarArgs);
         __android_log_print(ANDROID_LOG_INFO, "Indoor Navigation", "\n");
         va_end(lVarArgs);
     }
@@ -17,7 +18,7 @@ namespace sbrc {
         va_list lVarArgs;
         va_start(lVarArgs, pMessage);
         __android_log_vprint(ANDROID_LOG_ERROR, "Indoor Navigation", pMessage,
-            lVarArgs);
+                lVarArgs);
         __android_log_print(ANDROID_LOG_ERROR, "Indoor Navigation", "\n");
         va_end(lVarArgs);
     }
@@ -26,7 +27,7 @@ namespace sbrc {
         va_list lVarArgs;
         va_start(lVarArgs, pMessage);
         __android_log_vprint(ANDROID_LOG_WARN, "Indoor Navigation", pMessage,
-            lVarArgs);
+                lVarArgs);
         __android_log_print(ANDROID_LOG_WARN, "Indoor Navigation", "\n");
         va_end(lVarArgs);
     }
@@ -35,7 +36,7 @@ namespace sbrc {
         va_list lVarArgs;
         va_start(lVarArgs, pMessage);
         __android_log_vprint(ANDROID_LOG_DEBUG, "Indoor Navigation", pMessage,
-            lVarArgs);
+                lVarArgs);
         __android_log_print(ANDROID_LOG_DEBUG, "Indoor Navigation", "\n");
         va_end(lVarArgs);
     }

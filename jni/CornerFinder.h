@@ -54,15 +54,15 @@ public:
         CvScalar harris;
 
         //cvNamedWindow("SourceImage");
-       /* if (img->height > 500 || img->width > 650) {
+        /* if (img->height > 500 || img->width > 650) {
 
-            imgOnwork = cvCreateImage(cvSize(img->width / 2, img->height / 2), img->depth, img->nChannels);
-            cvPyrDown(img, imgOnwork); //resize
+             imgOnwork = cvCreateImage(cvSize(img->width / 2, img->height / 2), img->depth, img->nChannels);
+             cvPyrDown(img, imgOnwork); //resize
 
-        } else {*/
-            imgOnwork = cvCreateImage(cvGetSize(img), img->depth, img->nChannels);
-            cvCopyImage(img, imgOnwork);
-       // }
+         } else {*/
+        imgOnwork = cvCreateImage(cvGetSize(img), img->depth, img->nChannels);
+        cvCopyImage(img, imgOnwork);
+        // }
         printf("image depth: %d\n", imgOnwork->depth);
 
         IplImage* result = cvCreateImage(cvGetSize(imgOnwork), imgOnwork->depth, imgOnwork->nChannels);
@@ -89,7 +89,7 @@ public:
 
         Mat gray1, gray2, gray3;
         vector<Mat> matCollector;
-		Mat mCornerOut=(Mat) cornerOut;
+        Mat mCornerOut = (Mat) cornerOut;
         getEdges(mCornerOut, gray1, gray2);
         printf("Hello got it\n");
 
@@ -128,9 +128,9 @@ public:
         verticalLineholder.insert(verticalLineholder.end(), otherLines.begin(), otherLines.end());
 
         printf("Total lines in the system are : %d\n", verticalLineholder.size());
-       // cvNamedWindow("SharpedImage");
-       // cvShowImage("SharpedImage", result);
-       // cvWaitKey(0);
+        // cvNamedWindow("SharpedImage");
+        // cvShowImage("SharpedImage", result);
+        // cvWaitKey(0);
 
         cvReleaseImage(&result);
         cvReleaseImage(&result2);
@@ -246,8 +246,8 @@ public:
         res.setTo(Scalar(0));
         _tmp1.copyTo(res, (_tmp1 > 0.15)); //0.2
         //res = -res+1.0;
-       // imshow("tmp1", res);
-      //  waitKey();
+        // imshow("tmp1", res);
+        //  waitKey();
         minMaxLoc(_tmp, &minVal, &maxVal);
         cv::log(/*(_tmp - minVal) / (maxVal - minVal)*/res, _tmp);
 
