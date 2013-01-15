@@ -197,6 +197,7 @@ vector<vector<pair<CvPoint, int> > > ROIExtractor::imageROIExtractor(
         vector<CvPoint*> &lineContainer, vector<CvPoint> cornerContainer,
         IplImage *img, Mat *imgMat) {
 
+	isDoorFound=false;
     int i, j;
 
     vector < vector<pair<CvPoint, int> > > superContainer;
@@ -321,6 +322,9 @@ vector<vector<pair<CvPoint, int> > > ROIExtractor::imageROIExtractor(
                 //break;
             }
 
+            if(pX.x != INF&&pX.y != INF&& pY.x != -1&& pY.y != -1){
+            	isDoorFound=true;
+            }
             rectangle(*imgMat, pX, pY, cvScalar(255, 0, 0), 2);
             //cvWaitKey(0);
             indexHoldering.clear();

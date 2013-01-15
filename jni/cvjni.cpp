@@ -95,7 +95,12 @@ JNIEXPORT jboolean JNICALL Java_com_samsung_indoornavigation_opencv_OpenCV_doPro
 			roiExtractor.imageROIExtractor(lineContainer, cornerPoints,
 					(IplImage*) img, (Mat *) pMatRgb);
 
-	return 1;
+	if(roiExtractor.isDoorFound==true){
+		sbrc::Log::info("door Found.");
+		return true;
+	}
+	sbrc::Log::info("door Not Found.");
+	return false;
 }
 JNIEXPORT jboolean JNICALL Java_com_samsung_indoornavigation_opencv_OpenCV_doProcess2(
 		JNIEnv * env, jobject thiz, jlong addrRgba) {

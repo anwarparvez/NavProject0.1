@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.samsung.indoornavigation.IndoorNavigationActivity;
 import com.samsung.indoornavigation.R;
 import com.samsung.indoornavigation.opencv.ImageUtility;
 import com.samsung.indoornavigation.opencv.OpenCV;
@@ -140,8 +142,9 @@ public class ActionDetailFragment extends Fragment {
 
 	}
 
-
 	class MyAsyncTask extends AsyncTask<Integer, Integer, Long> {
+
+		boolean isDoorFound = false;
 
 		public MyAsyncTask(Activity context) {
 
@@ -159,28 +162,17 @@ public class ActionDetailFragment extends Fragment {
 			// int height = mBitmap.getHeight();
 			// int[] pixels = new int[width * height];
 			// mBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-		
-			Mat mat=new Mat();
-			mBitmap=ImageUtility.getBitmapFromLocalPath(mCurrentImagePath,1);
-			mBitmap =Utility.getResizedBitmap(mBitmap, 480, 640);
+
+			Mat mat = new Mat();
+			mBitmap = ImageUtility.getBitmapFromLocalPath(mCurrentImagePath, 1);
+			mBitmap = Utility.getResizedBitmap(mBitmap, 480, 640);
 			Utils.bitmapToMat(mBitmap, mat);
 			publishProgress(30);
-			mOpencv.doProcess(mat.getNativeObjAddr());
+			isDoorFound = mOpencv.doProcess(mat.getNativeObjAddr());
 
-			//mOpencv.setSourceImage(null,0,0,mCurrentImagePath);
+			// mOpencv.setSourceImage(null,0,0,mCurrentImagePath);
 			publishProgress(30);
-			Utils.matToBitmap(mat,mBitmap);
-
-/*			mOpencv.findEdgesandCorners();
-			publishProgress(10);
-			mOpencv.getCornerpoints();
-			publishProgress(10);*/
-			
-			
-			/*byte[] imageData = mOpencv.getSourceImage();
-			mBitmap = BitmapFactory.decodeByteArray(imageData, 0,
-					imageData.length);*/
-
+			Utils.matToBitmap(mat, mBitmap);
 
 			publishProgress(10);
 
@@ -196,10 +188,16 @@ public class ActionDetailFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(Long time) {
+
 			bar.setProgress(0);
 			ImageView targetImage = (ImageView) mContentView
 					.findViewById(R.id.imageView1);
 			targetImage.setImageBitmap(mBitmap);
+			IndoorNavigationActivity activity = (IndoorNavigationActivity) getActivity();
+			Log.i("my app", "isDoorFound="+isDoorFound);
+			activity.speakOut(isDoorFound);
+
+
 		}
 
 		@Override

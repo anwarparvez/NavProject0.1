@@ -24,6 +24,7 @@ public:
     typedef pair<int, int> pairing;
     typedef vector<pairing> nodes;
 
+
     struct setStruct {
         int X1, X2;
         int Y1, Y2;
@@ -85,6 +86,7 @@ public:
     set<int> dfs_set;
     int cycleIndex;
     stack<pair<int, int> > dfs_stack;
+    bool isDoorFound;
 
     bool isSameline(CvPoint p1, CvPoint p2, vector<CvPoint*> &lineContainer);
     void mergeSet(int X, int Y,

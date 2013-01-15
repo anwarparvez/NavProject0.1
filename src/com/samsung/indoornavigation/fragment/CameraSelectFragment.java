@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.samsung.indoornavigation.IndoorNavigationActivity;
 import com.samsung.indoornavigation.R;
 import com.samsung.indoornavigation.opencv.ImageUtility;
 import com.samsung.indoornavigation.opencv.OpenCV;
@@ -108,9 +109,8 @@ public class CameraSelectFragment extends Fragment {
 
 	}
 
-
-
 	class MyAsyncTask2 extends AsyncTask<Integer, Integer, Long> {
+		boolean isDoorFound = false;
 
 		public MyAsyncTask2(Activity context) {
 
@@ -133,10 +133,10 @@ public class CameraSelectFragment extends Fragment {
 			}
 			Mat mat = new Mat();
 			mBitmap = ImageUtility.getBitmapFromLocalPath(mCurrentImagePath, 1);
-			mBitmap =Utility.getResizedBitmap(mBitmap, 480, 640);
+			mBitmap = Utility.getResizedBitmap(mBitmap, 480, 640);
 			Utils.bitmapToMat(mBitmap, mat);
 			publishProgress(30);
-			mOpencv.doProcess(mat.getNativeObjAddr());
+			isDoorFound = mOpencv.doProcess(mat.getNativeObjAddr());
 
 			// mOpencv.setSourceImage(null,0,0,mCurrentImagePath);
 			publishProgress(30);
@@ -167,6 +167,10 @@ public class CameraSelectFragment extends Fragment {
 			ImageView targetImage = (ImageView) mContentView
 					.findViewById(R.id.imageView1);
 			targetImage.setImageBitmap(mBitmap);
+
+			IndoorNavigationActivity activity = (IndoorNavigationActivity) getActivity();
+			Log.i("my app", "isDoorFound=" + isDoorFound);
+			activity.speakOut(isDoorFound);
 		}
 
 		@Override
