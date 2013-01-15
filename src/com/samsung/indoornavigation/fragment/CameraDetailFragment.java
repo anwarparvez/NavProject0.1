@@ -9,12 +9,12 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.samsung.indoornavigation.R;
-import com.samsung.indoornavigation.surfaceview.Sample3View;
+import com.samsung.indoornavigation.surfaceview.Sample4View;
 
 public class CameraDetailFragment extends Fragment{
 	View mContexView=null;
     private static final String TAG = "Sample::Activity";
-    private Sample3View mView;
+    private Sample4View mView;
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -28,7 +28,7 @@ public class CameraDetailFragment extends Fragment{
 		mContexView=inflater.inflate(R.layout.camera_fragment, null);
 		FrameLayout frameLayout=(FrameLayout)mContexView.findViewById(R.id.camera_preview);
 		
-		mView = new Sample3View(getActivity());
+		mView = new Sample4View(getActivity());
 		frameLayout.addView(mView);
 		
 

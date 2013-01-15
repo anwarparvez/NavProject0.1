@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.samsung.indoornavigation.R;
 import com.samsung.indoornavigation.opencv.ImageUtility;
 import com.samsung.indoornavigation.opencv.OpenCV;
+import com.samsung.indoornavigation.opencv.Utility;
 
 public class ActionDetailFragment extends Fragment {
 	protected static final int ACTIVITY_SELECT_IMAGE = 10;
@@ -161,9 +162,10 @@ public class ActionDetailFragment extends Fragment {
 		
 			Mat mat=new Mat();
 			mBitmap=ImageUtility.getBitmapFromLocalPath(mCurrentImagePath,1);
+			mBitmap =Utility.getResizedBitmap(mBitmap, 480, 640);
 			Utils.bitmapToMat(mBitmap, mat);
 			publishProgress(30);
-			mOpencv.doProcess2(mat.getNativeObjAddr());
+			mOpencv.doProcess(mat.getNativeObjAddr());
 
 			//mOpencv.setSourceImage(null,0,0,mCurrentImagePath);
 			publishProgress(30);

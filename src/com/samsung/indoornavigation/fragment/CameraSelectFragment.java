@@ -27,13 +27,10 @@ import com.samsung.indoornavigation.opencv.ImageUtility;
 import com.samsung.indoornavigation.opencv.OpenCV;
 import com.samsung.indoornavigation.opencv.Utility;
 
-
-
 public class CameraSelectFragment extends Fragment {
 
 	private static final String IMAGE_DIRECTORY = Environment
-			.getExternalStorageDirectory().getPath()
-			+ "/DCIM/Camera/";
+			.getExternalStorageDirectory().getPath() + "/DCIM/Camera/";
 	private static final int ACTIVITY_SELECT_CAMERA = 20;
 
 	private static final String TAG = "CameraSelectFragment ";
@@ -111,6 +108,8 @@ public class CameraSelectFragment extends Fragment {
 
 	}
 
+
+
 	class MyAsyncTask2 extends AsyncTask<Integer, Integer, Long> {
 
 		public MyAsyncTask2(Activity context) {
@@ -132,22 +131,25 @@ public class CameraSelectFragment extends Fragment {
 			if (mCurrentImagePath == null) {
 				return null;
 			}
-			Mat mat=new Mat();
-			mBitmap=ImageUtility.getBitmapFromLocalPath(mCurrentImagePath,1);
+			Mat mat = new Mat();
+			mBitmap = ImageUtility.getBitmapFromLocalPath(mCurrentImagePath, 1);
+			mBitmap =Utility.getResizedBitmap(mBitmap, 480, 640);
 			Utils.bitmapToMat(mBitmap, mat);
 			publishProgress(30);
 			mOpencv.doProcess(mat.getNativeObjAddr());
 
-			//mOpencv.setSourceImage(null,0,0,mCurrentImagePath);
+			// mOpencv.setSourceImage(null,0,0,mCurrentImagePath);
 			publishProgress(30);
-			Utils.matToBitmap(mat,mBitmap);
+			Utils.matToBitmap(mat, mBitmap);
 
 			/*
 			 * Toast.makeText(this, "" + elapse +
 			 * " ms is used to extract features.", Toast.LENGTH_LONG).show();
 			 */
-			/*mBitmap = BitmapFactory.decodeByteArray(imageData, 0,
-					imageData.length);*/
+			/*
+			 * mBitmap = BitmapFactory.decodeByteArray(imageData, 0,
+			 * imageData.length);
+			 */
 
 			long end = System.currentTimeMillis();
 			long elapse = end - start;
